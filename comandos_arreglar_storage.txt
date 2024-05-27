@@ -1,0 +1,4 @@
+- [estar en la ruta del proyecto] cd D:\Descargas\rsu_reciclaje\rsu_reciclaje
+- [verificar si existe la carpeta] dir public\storage
+- [borrar la carpeta] rmdir public\storage
+- [crear el enlace con toda la ruta incluyendo la ruta del proyecto] mklink /D D:\Descargas\rsu_reciclaje\rsu_reciclaje\public\storage D:\Descargas\rsu_reciclaje\rsu_reciclaje\storage\app\public
