@@ -61,7 +61,7 @@
                             <td>{{ $vehicle->type->name }}</td>
                             <td>{{ $vehicle->plate }}</td>
                             <td>
-                                <a class="btn btn-secondary btn-sm"><i
+                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.vehicles.show', $vehicle->id) }}"><i
                                         class="fas fa-user-plus"></i></a>
                             </td>
                             <td>

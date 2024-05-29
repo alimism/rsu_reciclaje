@@ -16,6 +16,7 @@ use App\Models\User;
 Route::resource('brands',BrandsController::class)->names('admin.brands');
 Route::resource('models',BrandModelsController::class)->names('admin.models');
 Route::resource('vehicles',VehiclesController::class)->names('admin.vehicles');
+Route::post('vehicles/{id}/assign', [VehiclesController::class, 'assignOccupants'])->name('admin.vehicles.assignOccupants');
 Route::get('modelsbybrand/{id}', [BrandModelsController::class, 'modelsbybrand'])->name('admin.modelsbybrand');
 Route::resource('users',UsersController::class)->names('admin.users');
 

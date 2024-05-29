@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\BrandModel;
+use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\Vehiclecolor;
 use App\Models\Vehicleimage;
@@ -89,8 +90,38 @@ class VehiclesController extends Controller
      */
     public function show(string $id)
     {
-        //
+
+        // manejo con findOrFail para asegurar que existe el registro antes de continuar con la demas logica
+        $vehicle = Vehicle::with('occupants')->findOrFail($id);
+        // Filtrar usuarios por tipo 'Conductor' (usertype_id = 3) y 'Recolector' (usertype_id = 4)
+        $conductores = User::where('usertype_id', 3)->get();
+        $recolectores = User::where('usertype_id', 4)->get();
+
+        return view('admin.vehicles.show', compact('vehicle', 'conductores', 'recolectores'));
     }
+
+    public function assignOccupants(Request $request, $id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+
+        // Asignar los conductores y recolectores al vehículo
+        $conductor = $request->input('conductor');
+        $recolectores = $request->input('recolectores', []);
+
+        $occupants = [];
+        if ($conductor) {
+            $occupants[$conductor] = ['usertype_id' => 3];
+        }
+        foreach ($recolectores as $recolector) {
+            $occupants[$recolector] = ['usertype_id' => 4];
+        }
+
+        $vehicle->occupants()->sync($occupants);
+
+        return redirect()->route('admin.vehicles.show', $id)->with('success', 'Ocupantes asignados correctamente');
+    }
+
+
 
     /**
      * Show the form for editing the specified resource.

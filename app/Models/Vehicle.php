@@ -35,5 +35,10 @@ class Vehicle extends Model
         return $this->hasMany(Vehicleimage::class);
     }
 
+    public function occupants()
+    {
+        return $this->hasMany(VehicleOccupant::class, 'vehicle_id');
+    }
+
     protected $guarded = [];
 }
