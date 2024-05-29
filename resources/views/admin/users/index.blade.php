@@ -38,7 +38,7 @@
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->DNI }}</td>
                             <td>{{ $user->email }}</td>
-                            <td>{{ $user->type->name }}</td>
+                            <td>{{ $user->type ? $user->type->name : 'N/A' }}</td>
                             <td>
                                 {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary"><i
                                         class="fas fa-edit"></i></a> --}}

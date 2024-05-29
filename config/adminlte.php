@@ -339,7 +339,7 @@ return [
         ],
         [
             'text' => 'Personas',
-            'url' => '#',
+            'url' => '/admin/users',
             'icon' => 'fas fa-fw fa-users'
         ],
         [

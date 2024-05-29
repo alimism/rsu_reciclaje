@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         $this->call(VehicletypeSeeder::class);
         $this->call(VehiclecolorSeeder::class);
         $this->call(UsertypeSeeder::class);
+        $this->call(MasterUserSeeder::class); 
 
     }
 }
