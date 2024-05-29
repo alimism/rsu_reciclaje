@@ -304,29 +304,69 @@ return [
             'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
-
+    
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
         ],
         [
-            'text' => 'Marcas',
-            'url' => '/admin/brands',
-            'icon' => 'fas fa-fw fa-copyright '
+            'header' => 'GESTIÓN DE VEHÍCULOS',
         ],
         [
-            'text' => 'Modelos',
-            'url' => '/admin/models',
-            'icon' => 'fas fa-fw fa-road'
+            'text' => 'Datos',
+            'icon' => 'fas fa-fw fa-stream',
+            'submenu' => [
+                [
+                    'text' => 'Marcas',
+                    'url' => '/admin/brands',
+                    'icon' => 'fas fa-fw fa-copyright'
+                ],
+                [
+                    'text' => 'Modelos',
+                    'url' => '/admin/models',
+                    'icon' => 'fas fa-fw fa-road'
+                ],
+            ],
         ],
         [
             'text' => 'Unidades',
             'url' => '/admin/vehicles',
             'icon' => 'fas fa-fw fa-truck'
         ],
-
+        [
+            'header' => 'GESTIÓN DE PERSONAL',
+        ],
+        [
+            'text' => 'Personas',
+            'url' => '#',
+            'icon' => 'fas fa-fw fa-users'
+        ],
+        [
+            'text' => 'Tipos',
+            'url' => '#',
+            'icon' => 'fas fa-fw fa-user-tag'
+        ],
+        [
+            'header' => 'GESTIÓN DE RUTAS',
+        ],
+        [
+            'text' => 'Zonas',
+            'url' => '#',
+            'icon' => 'fas fa-fw fa-map-signs'
+        ],
+        [
+            'text' => 'Rutas',
+            'url' => '#',
+            'icon' => 'fas fa-fw fa-route'
+        ],
+        [
+            'text' => 'Programación',
+            'url' => '#',
+            'icon' => 'fas fa-fw fa-calendar-alt'
+        ],
     ],
+    
 
     /*
     |--------------------------------------------------------------------------
