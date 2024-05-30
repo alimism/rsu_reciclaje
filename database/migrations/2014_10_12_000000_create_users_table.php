@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('lastname')->nullable();
             $table->string('DNI',10)->nullable();
-            $table->date('bithdate')->nullable();
+            $table->date('birthdate')->nullable();
             $table->string('email')->unique();
             $table->string('license',50)->nullable();
             $table->text('address')->nullable();

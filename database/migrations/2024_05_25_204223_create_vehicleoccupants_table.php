@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('vehicleoccupants', function (Blueprint $table) {
             $table->id();
-            $table->date('assignment_date');
+            // $table->date('assignment_date'); Menciona que la fecha de asignacion ya se maneja con el created at
             $table->date('replacement_date')->nullable();
             $table->integer('status');
             $table->unsignedBigInteger('vehicle_id');

@@ -103,23 +103,33 @@ class VehiclesController extends Controller
     public function assignOccupants(Request $request, $id)
     {
         $vehicle = Vehicle::findOrFail($id);
-
-        // Asignar los conductores y recolectores al vehículo
+    
+        // Eliminar todos los ocupantes actuales del vehículo
+        $vehicle->occupants()->delete();
+    
+        // Asignar los nuevos conductores y recolectores al vehículo
         $conductor = $request->input('conductor');
         $recolectores = $request->input('recolectores', []);
-
-        $occupants = [];
+    
         if ($conductor) {
-            $occupants[$conductor] = ['usertype_id' => 3];
+            $vehicle->occupants()->create([
+                'user_id' => $conductor,
+                'usertype_id' => 3,
+                'status' => 1,
+            ]);
         }
+    
         foreach ($recolectores as $recolector) {
-            $occupants[$recolector] = ['usertype_id' => 4];
+            $vehicle->occupants()->create([
+                'user_id' => $recolector,
+                'usertype_id' => 4,
+                'status' => 1,
+            ]);
         }
-
-        $vehicle->occupants()->sync($occupants);
-
-        return redirect()->route('admin.vehicles.show', $id)->with('success', 'Ocupantes asignados correctamente');
+    
+        return redirect()->route('admin.vehicles.index', $id)->with('success', 'Ocupantes asignados correctamente');
     }
+    
 
 
 

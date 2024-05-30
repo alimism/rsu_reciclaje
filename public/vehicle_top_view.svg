@@ -1,0 +1,30 @@
+<svg width="200" height="600" viewBox="0 0 200 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Truck Body -->
+    <rect x="25" y="150" width="150" height="350" stroke="black" fill="slategrey" stroke-width="2" />
+    <!-- Cab -->
+    <rect x="25" y="50" width="150" height="100" stroke="black" fill="darkslategrey"
+        stroke-width="2" />
+    <!-- Windows -->
+    <rect x="30" y="50" width="70" height="10" stroke="black" fill="ghostwhite" stroke-width="2" />
+    <rect x="100" y="50" width="70" height="10" stroke="black" fill="ghostwhite" stroke-width="2" />
+    <!-- Seats in Cab -->
+    <rect x="45" y="85" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
+    <rect x="115" y="85" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
+    <!-- Mirrors -->
+    <rect x="5" y="85" width="20" height="10" stroke="black" fill="darkslategrey" stroke-width="2" />
+    <rect x="175" y="85" width="20" height="10" stroke="black" fill="darkslategrey" stroke-width="2" />
+    <!-- Seats in Cargo Area -->
+
+    <rect x="45" y="300" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
+    <rect x="115" y="300" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
+    <rect x="45" y="400" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
+    <rect x="115" y="400" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
+    <!-- Base for Stearing Wheel -->
+    <rect x="30" y="60" width="140" height="10" stroke="black" fill="darkslategrey" stroke-width="2" />
+    <!-- Stearing Wheel -->
+    <circle cx="65" cy="72" r="8" stroke="black" fill="black" stroke-width="2" />
+    <circle cx="65" cy="72" r="6" stroke="black" fill="darkslategrey" stroke-width="2" />
+    <rect x="60" y="71" width="10" height="2" stroke="black" fill="none" stroke-width="2" />
+    <rect x="64" y="71" width="2" height="5" stroke="black" fill="none" stroke-width="2" />
+    <circle cx="65" cy="72.5" r="1.5" stroke="black" fill="ghostwhite" stroke-width="0" />
+</svg>  
