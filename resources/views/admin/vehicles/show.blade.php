@@ -4,7 +4,8 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('admin.vehicles.index') }}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Regresar</a>
+        <a href="{{ route('admin.vehicles.index') }}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i>
+            Regresar</a>
 
         <div class="card mt-3">
             <div class="card-header">
@@ -13,34 +14,8 @@
             <div class="card-body">
                 <div class="row">
                     <div id="vehicle-container" style="text-align: center;" class="col-8">
-                        <svg width="150" height="550" viewBox="0 0 200 600" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(-90deg);">
-                            <!-- Truck Body -->
-                            <rect x="25" y="150" width="150" height="350" stroke="black" fill="slategrey" stroke-width="2" />
-                            <!-- Cab -->
-                            <rect x="25" y="50" width="150" height="100" stroke="black" fill="darkslategrey" stroke-width="2" />
-                            <!-- Windows -->
-                            <rect x="30" y="50" width="70" height="10" stroke="black" fill="ghostwhite" stroke-width="2" />
-                            <rect x="100" y="50" width="70" height="10" stroke="black" fill="ghostwhite" stroke-width="2" />
-                            <!-- Seats in Cab -->
-                            <rect id="seat1" x="45" y="85" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
-                            <rect id="seat2" x="115" y="85" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
-                            <!-- Mirrors -->
-                            <rect x="5" y="85" width="20" height="10" stroke="black" fill="darkslategrey" stroke-width="2" />
-                            <rect x="175" y="85" width="20" height="10" stroke="black" fill="darkslategrey" stroke-width="2" />
-                            <!-- Seats in Cargo Area -->
-                            <rect id="seat3" x="45" y="300" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
-                            <rect id="seat4" x="115" y="300" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
-                            <rect id="seat5" x="45" y="400" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
-                            <rect id="seat6" x="115" y="400" width="40" height="40" stroke="black" fill="white" stroke-width="2" />
-                            <!-- Base for Steering Wheel -->
-                            <rect x="30" y="60" width="140" height="10" stroke="black" fill="darkslategrey" stroke-width="2" />
-                            <!-- Steering Wheel -->
-                            <circle cx="65" cy="72" r="8" stroke="black" fill="black" stroke-width="2" />
-                            <circle cx="65" cy="72" r="6" stroke="black" fill="darkslategrey" stroke-width="2" />
-                            <rect x="60" y="71" width="10" height="2" stroke="black" fill="none" stroke-width="2" />
-                            <rect x="64" y="71" width="2" height="5" stroke="black" fill="none" stroke-width="2" />
-                            <circle cx="65" cy="72.5" r="1.5" stroke="black" fill="ghostwhite" stroke-width="0" />
-                        </svg>
+                        {!! file_get_contents(public_path('vehicle_top_view.svg')) !!}
+
                     </div>
 
                     <div class="col-4">
@@ -61,11 +36,12 @@
                         @if ($conductores->isEmpty())
                             <div class="alert alert-info">No hay conductores registrados.</div>
                         @else
-                            <select name="conductor" id="conductor" class="form-control select2" data-placeholder="Seleccione un conductor">
+                            <select name="conductor" id="conductor" class="form-control select2"
+                                data-placeholder="Seleccione un conductor">
                                 <option value=""></option>
                                 @foreach ($conductores as $conductor)
-                                    <option value="{{ $conductor->id }}" data-name="{{ $conductor->name }}" data-usertype="Conductor"
-                                        @if ($vehicle->occupants->where('usertype_id', 3)->pluck('user_id')->contains($conductor->id)) selected @endif>
+                                    <option value="{{ $conductor->id }}" data-name="{{ $conductor->name }}"
+                                        data-usertype="Conductor" @if ($vehicle->occupants->pluck('user_id')->contains($conductor->id)) selected @endif>
                                         {{ $conductor->name }}
                                     </option>
                                 @endforeach
@@ -78,10 +54,11 @@
                         @if ($recolectores->isEmpty())
                             <div class="alert alert-info">No hay recolectores registrados.</div>
                         @else
-                            <select name="recolectores[]" id="recolectores" class="form-control select2" multiple data-placeholder="Seleccione los recolectores">
+                            <select name="recolectores[]" id="recolectores" class="form-control select2" multiple
+                                data-placeholder="Seleccione los recolectores">
                                 @foreach ($recolectores as $recolector)
-                                    <option value="{{ $recolector->id }}" data-name="{{ $recolector->name }}" data-usertype="Recolector"
-                                        @if ($vehicle->occupants->where('usertype_id', 4)->pluck('user_id')->contains($recolector->id)) selected @endif>
+                                    <option value="{{ $recolector->id }}" data-name="{{ $recolector->name }}"
+                                        data-usertype="Recolector" @if ($vehicle->occupants->pluck('user_id')->contains($recolector->id)) selected @endif>
                                         {{ $recolector->name }}
                                     </option>
                                 @endforeach
@@ -98,6 +75,7 @@
     @push('js')
         <script>
             $(document).ready(function() {
+            // Inicializar Select2
                 $('.select2').select2({
                     theme: 'bootstrap-5',
                     allowClear: true,
@@ -105,40 +83,52 @@
                         $(this).data('placeholder');
                     }
                 });
+                //Fin Select2
 
+                //Definir colores R
                 var seatColors = ['lightblue', 'lightcoral', 'lightgreen', 'lightpink'];
 
-                // Initialize with existing data
+                // Inicializar con data existente, si ya hay asignaciones se vera
                 initializeSeats();
                 updateAssignedOccupants();
 
+                //Manejar select de conductor, en este un solo conductor
                 $('#conductor').on('change', function() {
+                    //cambiar color asiento svg
                     resetConductorSeats();
+                    //cambiar detalle de occupants
                     updateAssignedOccupants();
+                    //hay un valor seleccionado?
                     var selected = $(this).find('option:selected').val();
+                    //si valor entonces pintar svg
                     $('#seat1').attr('fill', selected ? 'lightgreen' : 'white');
                 });
 
                 $('#recolectores').on('change', function() {
+                    //cambiar color asiento svg
                     resetRecolectorSeats();
+                    //cambiar detalle de occupants
                     updateAssignedOccupants();
+                    //sacar opciones seleccionadas
                     var selectedOptions = $(this).find('option:selected');
+                    //para cada seleccion ir pintando asiento svg de los colores
                     selectedOptions.each(function(index, option) {
                         var seat = $('#seat' + (index + 2));
                         seat.attr('fill', seatColors[index % seatColors.length]);
                     });
                 });
 
+                //vacio
                 function resetConductorSeats() {
                     $('#seat1').attr('fill', 'white');
                 }
-
+                //vacio
                 function resetRecolectorSeats() {
                     for (var i = 2; i <= 5; i++) {
                         $('#seat' + i).attr('fill', 'white');
                     }
                 }
-
+                
                 function initializeSeats() {
                     @foreach ($vehicle->occupants as $occupant)
                         if ({{ $occupant->usertype_id }} == 3) {
@@ -167,7 +157,8 @@
                     if (recolectores.length > 0) {
                         $('#recolectores-header').show();
                         recolectores.each(function() {
-                            $('#recolectores-details').append('<li>' + $(this).data('name') + ' (' + $(this).data('usertype') + ')</li>');
+                            $('#recolectores-details').append('<li>' + $(this).data('name') + ' (' + $(this)
+                                .data('usertype') + ')</li>');
                         });
                     } else {
                         $('#recolectores-header').hide();

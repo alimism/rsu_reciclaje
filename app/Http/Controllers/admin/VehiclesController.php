@@ -104,7 +104,7 @@ class VehiclesController extends Controller
     {
         $vehicle = Vehicle::findOrFail($id);
     
-        // Eliminar todos los ocupantes actuales del vehículo
+        // Eliminar todos los ocupantes actuales del vehículo para reutilizar el metodo
         $vehicle->occupants()->delete();
     
         // Asignar los nuevos conductores y recolectores al vehículo
