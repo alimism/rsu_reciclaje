@@ -9,8 +9,8 @@
     </div>
 
     <div class="form-group col-4">
-        {!! Form::label('dni', 'DNI') !!}
-        {!! Form::text('dni', null, [
+        {!! Form::label('DNI', 'DNI') !!}
+        {!! Form::text('DNI', null, [
             'class' => 'form-control',
             'placeholder' => 'Ingrese DNI de la persona',
             'required',
