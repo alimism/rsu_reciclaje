@@ -50,7 +50,7 @@
                                 <form action="{{ route('admin.models.destroy', $model->id) }}" method="post"
                                     class="frmEliminar">
                                     @csrf
-                                    @method('put')
+                                    @method('delete')
                                     <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>

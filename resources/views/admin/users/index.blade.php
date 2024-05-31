@@ -7,12 +7,6 @@
     <div class="card">
         <div class="card-header">
 
-
-            {{-- Primera version con ruta hacia otra pagina para la creacion de una marca
-
-            <a href="{{ route('admin.users.create') }}" class="btn btn-success float-right"><i class="fas fa-plus"></i>
-                Nuevo</a> --}}
-
             <a id="btnNuevo" class="btn btn-success float-right"><i class="fas fa-plus"></i>
                 Nuevo</a>
 
@@ -23,10 +17,13 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>NOMBRE</th>
+                        <th>Foto</th>
                         <th>DNI</th>
+                        <th>NOMBRES</th>
                         <th>EMAIL</th>
+                        <th>DIRECCIÓN</th>
                         <th>TIPO</th>
+                        <th>ESTADO</th>
                         <th width="20">EDITAR</th>
                         <th width="20">ELIMINAR</th>
                     </tr>
@@ -35,10 +32,19 @@
                     @foreach ($users as $user)
                         <tr>
                             <td>{{ $user->id }}</td>
-                            <td>{{ $user->name }}</td>
+                            <td>
+
+                                <img src="{{ asset($user->profile_photo_path ?: 'storage/users_profile/default_profile.png') }}" width="50">
+                            </td>
                             <td>{{ $user->DNI }}</td>
+                            <td>{{ $user->name }} {{ $user->lastname }}</td>
                             <td>{{ $user->email }}</td>
+                            <td>{{ $user->address }}</td>
                             <td>{{ $user->type ? $user->type->name : 'N/A' }}</td>
+                            <td class="{{ $user->status == 1 ? 'text-success' : 'text-danger' }}">
+                                {{ $user->status == 1 ? 'Activo' : 'Inactivo' }}
+                            </td>
+
                             <td>
                                 {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary"><i
                                         class="fas fa-edit"></i></a> --}}
@@ -50,7 +56,7 @@
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="post"
                                     class="frmEliminar">
                                     @csrf
-                                    @method('put')
+                                    @method('delete')
                                     <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
@@ -71,7 +77,7 @@
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Formulario de Usuario</h5>

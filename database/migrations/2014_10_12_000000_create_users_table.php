@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('license',50)->nullable();
             $table->text('address')->nullable();
-
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
@@ -31,6 +30,8 @@ return new class extends Migration
             $table->foreign('usertype_id')->references('id')->on('usertypes');
             $table->unsignedBigInteger('zone_id')->nullable();
             $table->foreign('zone_id')->references('id')->on('zones');
+            $table->integer('status')->nullable();
+
         });
     }
 

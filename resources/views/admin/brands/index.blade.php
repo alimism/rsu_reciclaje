@@ -22,7 +22,7 @@
             <table class="table" id="datatable">
                 <thead>
                     <tr>
-                        
+
                         <th>ID</th>
                         <th>LOGO</th>
                         <th>NOMBRE</th>
@@ -52,10 +52,10 @@
                             <td>
                                 <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="post" class="frmEliminar">
                                     @csrf
-                                    @method('DELETE')
+                                    @method('delete')
                                     <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
                                 </form>
-                                
+
                             </td>
                         </tr>
                     @endforeach

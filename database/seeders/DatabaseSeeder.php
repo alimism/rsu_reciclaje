@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
         //Comandos
 
         //Cargr solo data nueva con seeders : php artisan migrate --seed
-        //Borrar todo y volver a cargarlo con seeders: php artisan migrate:fresh --seed 
-        
+        //Borrar todo y volver a cargarlo con seeders: php artisan migrate:fresh --seed
+
         //Crear seeder> php artisan make:seeder VehiclecolorSeeder
         //Crear modelo> php artisan make:model Vehicle
         //Crear migracion> php artisan make:migration create_vehicle_table
@@ -35,8 +35,9 @@ class DatabaseSeeder extends Seeder
         $this->call(VehiclecolorSeeder::class);
         $this->call(UsertypeSeeder::class);
         $this->call(MasterUserSeeder::class);
-        $this->call(UserForAssignmentSeeder::class); 
+        $this->call(UserForAssignmentSeeder::class);
         $this->call(BrandModelSeeder::class);
+        $this->call(ZoneSeeder::class);
 
     }
 }
