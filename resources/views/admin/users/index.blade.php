@@ -47,7 +47,7 @@
 
                             <td>
                                 {{-- <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary"><i
-                                        class="fas fa-edit"></i></a> --}}
+                                        class="fas fa-edit"></i></a> holi --}}
                                 <a class="btn btn-primary btnEditar" data-id="{{ $user->id }}"><i
                                         class="fas fa-edit"></i></a>
 
