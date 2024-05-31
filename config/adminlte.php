@@ -304,7 +304,7 @@ return [
             'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
-    
+
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
@@ -327,6 +327,11 @@ return [
                     'url' => '/admin/models',
                     'icon' => 'fas fa-fw fa-road'
                 ],
+                [
+                    'text' => 'Modelos',
+                    'url' => '/admin/vehicletypes',
+                    'icon' => 'fas fa-fw fa-road'
+                ],
             ],
         ],
         [
@@ -344,7 +349,7 @@ return [
         ],
         [
             'text' => 'Tipos',
-            'url' => '#',
+            'url' => '/admin/usertypes',
             'icon' => 'fas fa-fw fa-user-tag'
         ],
         [
@@ -366,7 +371,7 @@ return [
             'icon' => 'fas fa-fw fa-calendar-alt'
         ],
     ],
-    
+
 
     /*
     |--------------------------------------------------------------------------
