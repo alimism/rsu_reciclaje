@@ -327,11 +327,7 @@ return [
                     'url' => '/admin/models',
                     'icon' => 'fas fa-fw fa-road'
                 ],
-                [
-                    'text' => 'Modelos',
-                    'url' => '/admin/vehicletypes',
-                    'icon' => 'fas fa-fw fa-road'
-                ],
+
             ],
         ],
         [
@@ -349,7 +345,7 @@ return [
         ],
         [
             'text' => 'Tipos',
-            'url' => '/admin/usertypes',
+            'url' => '',
             'icon' => 'fas fa-fw fa-user-tag'
         ],
         [

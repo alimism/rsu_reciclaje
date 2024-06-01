@@ -3,9 +3,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\BrandsController;
 use App\Http\Controllers\admin\BrandModelsController;
 use App\Http\Controllers\admin\UsersController;
-use App\Http\Controllers\Admin\UserTypesController;
+
 use App\Http\Controllers\admin\VehiclesController;
-use App\Http\Controllers\Admin\VehicleTypesController;
+
 
 
 // Route::get('/brands', [App\Http\Controllers\admin\BrandsController::class, 'index'])->name('admin.brands.index');
@@ -20,7 +20,6 @@ Route::resource('vehicles',VehiclesController::class)->names('admin.vehicles');
 Route::post('vehicles/{id}/assign', [VehiclesController::class, 'assignOccupants'])->name('admin.vehicles.assignOccupants');
 Route::get('modelsbybrand/{id}', [BrandModelsController::class, 'modelsbybrand'])->name('admin.modelsbybrand');
 Route::resource('users',UsersController::class)->names('admin.users');
-Route::resource('usertypes',UserTypesController::class)->names('admin.usertypes');
-Route::resource('vehicletypes',VehicleTypesController::class)->names('admin.vehicletypes');
+
 
 ?>
