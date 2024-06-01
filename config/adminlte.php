@@ -357,7 +357,7 @@ return [
         ],
         [
             'text' => 'Zonas',
-            'url' => '#',
+            'url' => '/admin/zones',
             'icon' => 'fas fa-fw fa-map-signs'
         ],
         [

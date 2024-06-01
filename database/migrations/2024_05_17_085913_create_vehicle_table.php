@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('plate',10);
             $table->string('year',10);
             $table->text('description')->nullable();
+            $table->integer('capacity')->nullable();
+            
             $table->integer('status');
             $table->unsignedBigInteger('brand_id');
             $table->unsignedBigInteger('model_id');

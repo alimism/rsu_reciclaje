@@ -6,6 +6,8 @@ use App\Http\Controllers\admin\UsersController;
 use App\Http\Controllers\admin\UsertypesController;
 use App\Http\Controllers\admin\VehiclesController;
 use App\Http\Controllers\admin\VehicletypesController;
+use App\Http\Controllers\admin\ZonecoordsController;
+use App\Http\Controllers\admin\ZonesController;
 use App\Models\BrandModel;
 use App\Models\User;
 
@@ -23,6 +25,6 @@ Route::resource('usertypes',UsertypesController::class)->names('admin.usertypes'
 Route::post('vehicles/{id}/assign', [VehiclesController::class, 'assignOccupants'])->name('admin.vehicles.assignOccupants');
 Route::get('modelsbybrand/{id}', [BrandModelsController::class, 'modelsbybrand'])->name('admin.modelsbybrand');
 Route::resource('users',UsersController::class)->names('admin.users');
-
-
+Route::resource('zones',ZonesController::class)->names('admin.zones');
+Route::resource('zonecoords',ZonecoordsController::class)->names('admin.zonecoords');
 ?>

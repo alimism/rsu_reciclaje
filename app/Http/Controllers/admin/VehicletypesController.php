@@ -29,7 +29,7 @@ class VehicletypesController extends Controller
 
         Vehicletype::create($request->all());
 
-        return redirect()->route('admin.Vehicletypes.index')->with('success', 'Tipo de vehiculo creado');
+        return redirect()->route('admin.vehicletypes.index')->with('success', 'Tipo de vehiculo creado');
     }
 
     public function show($id)

@@ -5,13 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Zone extends Model
+class Zonecoord extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'area',
-        'description',
-    ];
 }
