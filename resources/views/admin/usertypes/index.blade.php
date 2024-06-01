@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Marcas')
+@section('title', 'Tipos de Usuarios')
 
 @section('content')
     <div class="p-2"></div>
@@ -10,13 +10,13 @@
 
             {{-- Primera version con ruta hacia otra pagina para la creacion de una marca
 
-            <a href="{{ route('admin.brands.create') }}" class="btn btn-success float-right"><i class="fas fa-plus"></i>
+            <a href="{{ route('admin.usertypes.create') }}" class="btn btn-success float-right"><i class="fas fa-plus"></i>
                 Nuevo</a> --}}
 
             <a id="btnNuevo" class="btn btn-success float-right"><i class="fas fa-plus"></i>
                 Nuevo</a>
 
-            <h4>Listado de Marcas</h4>
+            <h4>Listado de Tipos de Usuarios</h4>
         </div>
         <div class="card-body">
             <table class="table" id="datatable">
@@ -24,7 +24,6 @@
                     <tr>
 
                         <th>ID</th>
-                        <th>LOGO</th>
                         <th>NOMBRE</th>
                         <th>DESCRIPCION</th>
 
@@ -33,25 +32,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($brands as $brand)
+                    @foreach ($usertypes as $usertype)
                         <tr>
 
-                            <td>{{ $brand->id }}</td>
-                            <td>
-                                <img src="{{ asset($brand->logo ?: 'storage/brands_logo/default_brand.png') }}"
-                                    width="50">
-                            </td>
-                            <td>{{ $brand->name }}</td>
-                            <td>{{ $brand->description }}</td>
+                            <td>{{ $usertype->id }}</td>
+                            <td>{{ $usertype->name }}</td>
+                            <td>{{ $usertype->description }}</td>
 
                             <td>
-                                {{-- <a href="{{ route('admin.brands.edit', $brand->id) }}" class="btn btn-primary"><i
+                                {{-- <a href="{{ route('admin.usertypes.edit', $usertype->id) }}" class="btn btn-primary"><i
                                         class="fas fa-edit"></i></a> --}}
-                                <a class="btn btn-primary btnEditar" data-id="{{ $brand->id }}"><i
+                                <a class="btn btn-primary btnEditar" data-id="{{ $usertype->id }}"><i
                                         class="fas fa-edit"></i></a>
                             </td>
                             <td>
-                                <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="post"
+                                <form action="{{ route('admin.usertypes.destroy', $usertype->id) }}" method="post"
                                     class="frmEliminar">
                                     @csrf
                                     @method('delete')
@@ -79,7 +74,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Formulario de Marca</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Formulario de Tipo de Vehiculo</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -106,7 +101,7 @@
 
             $('#btnNuevo').click(function() {
                 $.ajax({
-                    url: "{{ route('admin.brands.create') }}",
+                    url: "{{ route('admin.usertypes.create') }}",
                     type: "GET",
                     success: function(response) {
                         $('#exampleModal .modal-body').html(response);
@@ -118,8 +113,9 @@
             $('.btnEditar').click(function() {
                 var id = $(this).data('id');
                 $.ajax({
-                    url: "{{ route('admin.brands.edit', ['brand' => '__id__']) }}".replace('__id__',
-                        id),
+                    url: "{{ route('admin.usertypes.edit', ['usertype' => '__id__']) }}"
+                        .replace('__id__',
+                            id),
                     type: "GET",
                     success: function(response) {
                         $('#exampleModal .modal-body').html(response);
@@ -159,7 +155,7 @@
             });
         </script>
     @endif
-    
+
     @if (session('error'))
         <script>
             Swal.fire({
