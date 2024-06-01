@@ -24,4 +24,5 @@ Route::post('vehicles/{id}/assign', [VehiclesController::class, 'assignOccupants
 Route::get('modelsbybrand/{id}', [BrandModelsController::class, 'modelsbybrand'])->name('admin.modelsbybrand');
 Route::resource('users',UsersController::class)->names('admin.users');
 
+
 ?>

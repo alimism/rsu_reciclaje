@@ -304,7 +304,7 @@ return [
             'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
-    
+
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
@@ -371,7 +371,7 @@ return [
             'icon' => 'fas fa-fw fa-calendar-alt'
         ],
     ],
-    
+
 
     /*
     |--------------------------------------------------------------------------
