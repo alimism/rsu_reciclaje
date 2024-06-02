@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Zone;
+use App\Models\Zonecoord;
 use Illuminate\Http\Request;
 
 class ZonesController extends Controller
@@ -40,7 +41,8 @@ class ZonesController extends Controller
     public function show(string $id)
     {
         $zone = Zone::findOrFail($id);
-        return view('admin.zones.show', compact('zone'));
+        $zonecoords = Zonecoord::all();
+        return view('admin.zones.show', compact('zone','zonecoords'));
     }
 
     public function edit($id)

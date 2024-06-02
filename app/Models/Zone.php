@@ -14,4 +14,9 @@ class Zone extends Model
         'area',
         'description',
     ];
+
+    public function coords()
+    {
+        return $this->hasMany(Zonecoord::class, 'zone_id');
+    }
 }

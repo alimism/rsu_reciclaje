@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Zone;
+use App\Models\Zonecoord;
 use Illuminate\Http\Request;
 
 class ZonecoordsController extends Controller
@@ -12,7 +14,7 @@ class ZonecoordsController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -21,7 +23,7 @@ class ZonecoordsController extends Controller
     public function create()
     {
         // return '<h1>Google Maps</h1>';
-        return view('admin.zonecoords.create');
+
 
     }
 
@@ -30,7 +32,8 @@ class ZonecoordsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Zonecoord::create($request->all());
+        return redirect()->route('admin.zones.show', $request->zone_id)->with('success', 'Coordenada creado');
     }
 
     /**
@@ -38,7 +41,9 @@ class ZonecoordsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $zone = Zone::findOrFail($id);
+        $coords = Zonecoord::where('zone_id', $id);
+        return view('admin.zones.show', compact('zone', 'coords'));
     }
 
     /**
@@ -46,7 +51,11 @@ class ZonecoordsController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $zone = Zone::with(['coords' => function ($query) {
+            $query->latest()->select('id', 'zone_id', 'latitude', 'longitude');
+        }])->findOrFail($id);
+    
+        return view('admin.zonecoords.create', compact('zone'));
     }
 
     /**
