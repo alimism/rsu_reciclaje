@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.app')
 
 @section('title', 'Asignación de Personal')
 
@@ -28,6 +28,9 @@
                 </div>
                 <div class="col-8">
                     <div class="card">
+                        <div class="card-header">
+                            Listado de Coordenadas
+                        </div>
                         <div class="card-body">
                             <table class="table table-striped">
                                 <thead>

@@ -33,13 +33,13 @@
 {{-- Create a common footer --}}
 
 @section('footer')
-    <div class="float-right">
+    {{-- <div class="float-right">
         Version: {{ config('app.version', '1.0.0') }}
-    </div>
+    </div> --}}
 
     <strong>
         <a href="{{ config('app.company_url', '#') }}">
-            {{ config('app.company_name', 'My company') }}
+            {{ config('app.company_name', 'ReciclaUSAT') }}
         </a>
     </strong>
 @stop
@@ -57,19 +57,9 @@
 @endpush
 
 {{-- Add common CSS customizations --}}
-
-@push('css')
-<style type="text/css">
-
-    {{-- You can add AdminLTE customizations here --}}
-    /*
-    .card-header {
-        border-bottom: none;
-    }
-    .card-title {
-        font-weight: 600;
-    }
-    */
-
-</style>
-@endpush
+@section('adminlte_css')
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <link rel="icon" href="{{ asset('favicons/favicon.png') }}" type="image/png">
+    @stack('css')
+    @yield('css')
+@stop

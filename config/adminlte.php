@@ -30,7 +30,7 @@ return [
     |
     */
 
-    'use_ico_only' => false,
+    'use_ico_only' => true,
     'use_full_favicon' => false,
 
     /*
@@ -64,11 +64,11 @@ return [
     */
 
     'logo' => '<b>Recicla</b>USAT',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo_img' => 'vendor/adminlte/dist/img/ReciclaUSATLogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'ReciclaUSAT',
 
     /*
     |--------------------------------------------------------------------------
@@ -280,6 +280,16 @@ return [
     'enabled_laravel_mix' => false,
     'laravel_mix_css_path' => 'css/app.css',
     'laravel_mix_js_path' => 'js/app.js',
+
+    'assets' => [
+        'css' => [
+            'css/custom.css',
+        ],
+        'js' => [
+            // Otros scripts
+        ],
+    ],
+    
 
     /*
     |--------------------------------------------------------------------------
