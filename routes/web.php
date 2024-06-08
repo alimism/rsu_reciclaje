@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Brand;
 use App\Http\Controllers\admin;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,3 +34,5 @@ Auth::routes();
 /* para proteger rutas ->middleware('auth:sanctum') */
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('auth:sanctum');
+
+
