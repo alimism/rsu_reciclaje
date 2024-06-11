@@ -28,7 +28,7 @@
                         <th>DESCRIPCION</th>
 
                         <th width="20">EDITAR</th>
-                        <th width="20">ELIMINAR</th>
+                        {{-- <th width="20">ELIMINAR</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +45,7 @@
                                 <a class="btn btn-primary btnEditar" data-id="{{ $usertype->id }}"><i
                                         class="fas fa-edit"></i></a>
                             </td>
-                            <td>
+                            {{-- <td>
                                 <form action="{{ route('admin.usertypes.destroy', $usertype->id) }}" method="post"
                                     class="frmEliminar">
                                     @csrf
@@ -53,7 +53,7 @@
                                     <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
                                 </form>
 
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
 
@@ -127,22 +127,22 @@
                 });
             });
 
-            $('.frmEliminar').submit(function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: "¿Está seguro de eliminar?",
-                    text: "Esta acción es irreversible",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Sí, eliminar"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.submit();
-                    }
-                });
-            });
+            // $('.frmEliminar').submit(function(e) {
+            //     e.preventDefault();
+            //     Swal.fire({
+            //         title: "¿Está seguro de eliminar?",
+            //         text: "Esta acción es irreversible",
+            //         icon: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonColor: "#3085d6",
+            //         cancelButtonColor: "#d33",
+            //         confirmButtonText: "Sí, eliminar"
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             this.submit();
+            //         }
+            //     });
+            // });
         });
     </script>
 
