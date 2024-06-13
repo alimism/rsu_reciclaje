@@ -13,9 +13,8 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div id="vehicle-container" style="text-align: center;" class="col-8">
+                    <div id="vehicle-container" style="text-align: center;" class="col-8 d-flex justify-content-center">
                         {!! file_get_contents(public_path('vehicle_top_view.svg')) !!}
-
                     </div>
 
                     <div class="col-4">
@@ -25,6 +24,8 @@
                             <li id="conductor-details" class="list-group-item"></li>
                             <h5 id="recolectores-header" style="display: none;">Recolectores:</h5>
                             <li id="recolectores-details" class="list-group-item"></li>
+                            <h5 id="extra-occupants-header" style="display: none;">Ocupantes Adicionales:</h5>
+                            <li id="extra-occupants-details" class="list-group-item"></li>
                         </ul>
                     </div>
                 </div>
@@ -75,74 +76,93 @@
     @push('js')
         <script>
             $(document).ready(function() {
-            // Inicializar Select2
+                // Inicializar Select2
                 $('.select2').select2({
                     theme: 'bootstrap-5',
                     allowClear: true,
                     placeholder: function() {
-                        $(this).data('placeholder');
+                        return $(this).data('placeholder');
                     }
                 });
-                //Fin Select2
 
-                //Definir colores R
+                // Colores para los recolectores
                 var seatColors = ['lightblue', 'lightcoral', 'lightgreen', 'lightpink'];
 
-                // Inicializar con data existente, si ya hay asignaciones se vera
+                // Inicializar asientos con data existente, si ya hay asignaciones
                 initializeSeats();
                 updateAssignedOccupants();
+                updateSeatVisibility();
 
-                //Manejar select de conductor, en este un solo conductor
+                // Manejar select de conductor
                 $('#conductor').on('change', function() {
-                    //cambiar color asiento svg
                     resetConductorSeats();
-                    //cambiar detalle de occupants
                     updateAssignedOccupants();
-                    //hay un valor seleccionado?
                     var selected = $(this).find('option:selected').val();
-                    //si valor entonces pintar svg
-                    $('#seat1').attr('fill', selected ? 'lightgreen' : 'white');
+                    if (selected) {
+                        $('#seat1').attr('fill', 'lightgreen');
+                    }
                 });
 
+                // Manejar select de recolectores
                 $('#recolectores').on('change', function() {
-                    //cambiar color asiento svg
                     resetRecolectorSeats();
-                    //cambiar detalle de occupants
                     updateAssignedOccupants();
-                    //sacar opciones seleccionadas
                     var selectedOptions = $(this).find('option:selected');
-                    //para cada seleccion ir pintando asiento svg de los colores
                     selectedOptions.each(function(index, option) {
-                        var seat = $('#seat' + (index + 2));
-                        seat.attr('fill', seatColors[index % seatColors.length]);
+                        if (index < 9) {
+                            var seat = $('#seat' + (index + 2));
+                            seat.attr('fill', seatColors[index % seatColors.length]);
+                        }
                     });
                 });
 
-                //vacio
+                // Resetear asientos del conductor
                 function resetConductorSeats() {
                     $('#seat1').attr('fill', 'white');
                 }
-                //vacio
+
+                // Resetear asientos de los recolectores
                 function resetRecolectorSeats() {
-                    for (var i = 2; i <= 5; i++) {
+                    for (var i = 2; i <= 10; i++) {
                         $('#seat' + i).attr('fill', 'white');
                     }
                 }
-                
+
+                // Actualizar la visibilidad de los asientos según la capacidad
+                function updateSeatVisibility() {
+                    var capacity = {{ $capacity }};
+                    for (var i = 2; i <= 10; i++) {
+                        if (i <= capacity) {
+                            $('#seat' + i).show();
+                        } else {
+                            $('#seat' + i).hide();
+                        }
+                    }
+                }
+
                 function initializeSeats() {
+                    var extraOccupants = [];
+                    var seatIndex = 1;
                     @foreach ($vehicle->occupants as $occupant)
+
                         if ({{ $occupant->usertype_id }} == 3) {
                             $('#seat1').attr('fill', 'lightgreen');
                         } else if ({{ $occupant->usertype_id }} == 4) {
-                            var seatIndex = $('#recolectores option[value="{{ $occupant->user_id }}"]').index();
-                            $('#seat' + (seatIndex + 2)).attr('fill', seatColors[seatIndex % seatColors.length]);
+                            if (seatIndex < {{ $capacity }}) {
+                                $('#seat' + (seatIndex + 1)).attr('fill', seatColors[seatIndex % seatColors.length]);
+                                seatIndex++;
+                            } else {
+                                extraOccupants.push('{{ $occupant->name }}');
+                            }
                         }
                     @endforeach
+                    updateExtraOccupants(extraOccupants);
                 }
 
                 function updateAssignedOccupants() {
                     var conductor = $('#conductor').find('option:selected');
                     var recolectores = $('#recolectores').find('option:selected');
+                    var extraOccupants = [];
 
                     $('#conductor-details').empty();
                     if (conductor.length > 0 && conductor.val() !== "") {
@@ -156,12 +176,30 @@
                     $('#recolectores-details').empty();
                     if (recolectores.length > 0) {
                         $('#recolectores-header').show();
-                        recolectores.each(function() {
-                            $('#recolectores-details').append('<li>' + $(this).data('name') + ' (' + $(this)
-                                .data('usertype') + ')</li>');
+                        recolectores.each(function(index) {
+                            if (index < 9) {
+                                $('#recolectores-details').append('<li>' + $(this).data('name') + ' (' + $(this)
+                                    .data('usertype') + ')</li>');
+                            } else {
+                                extraOccupants.push($(this).data('name') + ' (' + $(this).data('usertype') +
+                                    ')');
+                            }
                         });
                     } else {
                         $('#recolectores-header').hide();
+                    }
+                    updateExtraOccupants(extraOccupants);
+                }
+
+                function updateExtraOccupants(extraOccupants) {
+                    $('#extra-occupants-details').empty();
+                    if (extraOccupants.length > 0) {
+                        $('#extra-occupants-header').show();
+                        extraOccupants.forEach(function(occupant) {
+                            $('#extra-occupants-details').append('<li>' + occupant + '</li>');
+                        });
+                    } else {
+                        $('#extra-occupants-header').hide();
                     }
                 }
             });
