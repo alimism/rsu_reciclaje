@@ -76,7 +76,7 @@
     @push('js')
         <script>
             $(document).ready(function() {
-                // Inicializar Select2
+                // Inicializar Select2 con tema bootstrap-5 y permitir limpieza
                 $('.select2').select2({
                     theme: 'bootstrap-5',
                     allowClear: true,
@@ -85,121 +85,132 @@
                     }
                 });
 
-                // Colores para los recolectores
+                // Colores para los asientos de los recolectores
                 var seatColors = ['lightblue', 'lightcoral', 'lightgreen', 'lightpink'];
 
-                // Inicializar asientos con data existente, si ya hay asignaciones
+                // Inicializar asientos con los datos existentes
                 initializeSeats();
                 updateAssignedOccupants();
                 updateSeatVisibility();
 
-                // Manejar select de conductor
+                // Manejar cambios en el select de conductor
                 $('#conductor').on('change', function() {
-                    resetConductorSeats();
-                    updateAssignedOccupants();
-                    var selected = $(this).find('option:selected').val();
+                    resetConductorSeats(); // Resetea los asientos del conductor
+                    updateAssignedOccupants(); // Actualiza la lista de ocupantes asignados
+                    var selected = $(this).find('option:selected').val(); // Obtiene el valor seleccionado
                     if (selected) {
-                        $('#seat1').attr('fill', 'lightgreen');
+                        $('#seat1').attr('fill', 'lightgreen'); // Asigna color al asiento del conductor
                     }
                 });
 
-                // Manejar select de recolectores
+                // Manejar cambios en el select de recolectores
                 $('#recolectores').on('change', function() {
-                    resetRecolectorSeats();
-                    updateAssignedOccupants();
-                    var selectedOptions = $(this).find('option:selected');
+                    resetRecolectorSeats(); // Resetea los asientos de los recolectores
+                    updateAssignedOccupants(); // Actualiza la lista de ocupantes asignados
+                    var selectedOptions = $(this).find('option:selected'); // Obtiene las opciones seleccionadas
                     selectedOptions.each(function(index, option) {
                         if (index < 9) {
-                            var seat = $('#seat' + (index + 2));
+                            var seat = $('#seat' + (index +
+                            2)); // Asigna colores a los asientos de recolectores
                             seat.attr('fill', seatColors[index % seatColors.length]);
                         }
                     });
                 });
 
-                // Resetear asientos del conductor
+                // Resetea el color del asiento del conductor
                 function resetConductorSeats() {
                     $('#seat1').attr('fill', 'white');
                 }
 
-                // Resetear asientos de los recolectores
+                // Resetea los colores de los asientos de los recolectores
                 function resetRecolectorSeats() {
                     for (var i = 2; i <= 10; i++) {
                         $('#seat' + i).attr('fill', 'white');
                     }
                 }
 
-                // Actualizar la visibilidad de los asientos según la capacidad
+                // Actualiza la visibilidad de los asientos según la capacidad del vehículo
                 function updateSeatVisibility() {
                     var capacity = {{ $capacity }};
                     for (var i = 2; i <= 10; i++) {
                         if (i <= capacity) {
-                            $('#seat' + i).show();
+                            $('#seat' + i).show(); // Muestra los asientos dentro de la capacidad
                         } else {
-                            $('#seat' + i).hide();
+                            $('#seat' + i).hide(); // Oculta los asientos fuera de la capacidad
                         }
                     }
                 }
 
+                // Inicializa los asientos con datos existentes
                 function initializeSeats() {
                     var extraOccupants = [];
                     var seatIndex = 1;
                     @foreach ($vehicle->occupants as $occupant)
 
                         if ({{ $occupant->usertype_id }} == 3) {
-                            $('#seat1').attr('fill', 'lightgreen');
+                            $('#seat1').attr('fill', 'lightgreen'); // Asigna color al asiento del conductor
                         } else if ({{ $occupant->usertype_id }} == 4) {
                             if (seatIndex < {{ $capacity }}) {
-                                $('#seat' + (seatIndex + 1)).attr('fill', seatColors[seatIndex % seatColors.length]);
+                                $('#seat' + (seatIndex + 1)).attr('fill', seatColors[seatIndex % seatColors
+                                .length]); // Asigna color a los asientos de recolectores
                                 seatIndex++;
                             } else {
-                                extraOccupants.push('{{ $occupant->name }}');
+                                extraOccupants.push('{{ $occupant->name }}'); // Añade ocupantes adicionales
                             }
                         }
                     @endforeach
-                    updateExtraOccupants(extraOccupants);
+                    updateExtraOccupants(extraOccupants); // Actualiza la lista de ocupantes adicionales
                 }
 
+                // Actualiza la lista de ocupantes asignados
                 function updateAssignedOccupants() {
-                    var conductor = $('#conductor').find('option:selected');
-                    var recolectores = $('#recolectores').find('option:selected');
+                    var conductor = $('#conductor').find('option:selected'); // Obtiene el conductor seleccionado
+                    var recolectores = $('#recolectores').find(
+                    'option:selected'); // Obtiene los recolectores seleccionados
                     var extraOccupants = [];
 
-                    $('#conductor-details').empty();
+                    $('#conductor-details').empty(); // Limpia los detalles del conductor
                     if (conductor.length > 0 && conductor.val() !== "") {
-                        $('#conductor-header').show();
-                        $('#conductor-details').text(conductor.data('name') + ' (' + conductor.data('usertype') + ')');
+                        $('#conductor-header').show(); // Muestra el encabezado del conductor
+                        $('#conductor-details').text(conductor.data('name') + ' (' + conductor.data('usertype') +
+                        ')'); // Muestra el nombre y tipo del conductor
                     } else {
-                        $('#conductor-header').hide();
+                        $('#conductor-header')
+                    .hide(); // Oculta el encabezado del conductor si no hay conductor seleccionado
                         $('#conductor-details').text('');
                     }
 
-                    $('#recolectores-details').empty();
+                    $('#recolectores-details').empty(); // Limpia los detalles de los recolectores
                     if (recolectores.length > 0) {
-                        $('#recolectores-header').show();
+                        $('#recolectores-header').show(); // Muestra el encabezado de recolectores
                         recolectores.each(function(index) {
                             if (index < 9) {
                                 $('#recolectores-details').append('<li>' + $(this).data('name') + ' (' + $(this)
-                                    .data('usertype') + ')</li>');
+                                    .data('usertype') + ')</li>'); // Añade los recolectores a la lista
                             } else {
                                 extraOccupants.push($(this).data('name') + ' (' + $(this).data('usertype') +
-                                    ')');
+                                    ')'); // Añade recolectores adicionales
                             }
                         });
                     } else {
-                        $('#recolectores-header').hide();
+                        $('#recolectores-header')
+                    .hide(); // Oculta el encabezado de recolectores si no hay recolectores seleccionados
                     }
-                    updateExtraOccupants(extraOccupants);
+                    updateExtraOccupants(extraOccupants); // Actualiza la lista de ocupantes adicionales
                 }
 
+                // Actualiza la lista de ocupantes adicionales
                 function updateExtraOccupants(extraOccupants) {
-                    $('#extra-occupants-details').empty();
+                    $('#extra-occupants-details').empty(); // Limpia los detalles de ocupantes adicionales
                     if (extraOccupants.length > 0) {
-                        $('#extra-occupants-header').show();
+                        $('#extra-occupants-header').show(); // Muestra el encabezado de ocupantes adicionales
                         extraOccupants.forEach(function(occupant) {
-                            $('#extra-occupants-details').append('<li>' + occupant + '</li>');
+                            $('#extra-occupants-details').append('<li>' + occupant +
+                            '</li>'); // Añade ocupantes adicionales a la lista
                         });
                     } else {
-                        $('#extra-occupants-header').hide();
+                        $('#extra-occupants-header')
+                    .hide(); // Oculta el encabezado de ocupantes adicionales si no hay ocupantes adicionales
                     }
                 }
             });
