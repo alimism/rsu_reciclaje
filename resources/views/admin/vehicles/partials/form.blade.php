@@ -85,11 +85,21 @@
 </div>
 
 <div class="form-row">
-    <div class="form-group col-12">
+    <div class="form-group col-6">
+        {!! Form::label('capacity', 'Capacidad') !!}
+        {!! Form::number('capacity', null, [
+            'class' => 'form-control',
+            'placeholder' => 'Ingrese la capacidad de la unidad',
+        ]) !!}
+    </div>
+
+    <div class="form-group col-6">
         {!! Form::label('status', 'Activo') !!}
         {!! Form::checkbox('status', 1, null) !!}
 
     </div>
+
+
 </div>
 
 <div class="form-group">
