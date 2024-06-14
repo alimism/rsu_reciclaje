@@ -15,35 +15,39 @@ class AuthController extends Controller
        // Registro de usuarios
        public function register(Request $request)
        {
+
+        //$response = ["status"=>0, "message"=>"", "token"=>"","token_type"=>"Bearer" ];
+
            $validator = Validator::make($request->all(), [
-               'name' => 'required|string|max:255',
+               //'name' => 'required|string|max:255',
                'email' => 'required|string|email|max:255|unique:users',
-               'password' => 'required|string|min:8',
+               //'password' => 'required|string|min:8',
            ]);
 
            if ($validator->fails()) {
-               return response()->json($validator->errors(), 400);
+                //$mensaje = $validator->errors();
+                $response = ['status'=> 400,'message' => 'El email ingresado ya está siendo usado' ];
+           }else{
+                $user = User::create([
+                    'name' => $request->name,
+                    'lastname' => $request->lastname,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'usertype_id' => 2,
+                    'status' => 1,
+                ]);
+
+                $token = $user->createToken('auth_token')->plainTextToken;
+                $response = ['status' => 200, 'message'=>'Registro exitoso, Bienvenido!','token' => $token,'user' => $user ] ;
+
            }
+           return response()->json($response);
 
-           $user = User::create([
-               'name' => $request->name,
-               'email' => $request->email,
-               'password' => Hash::make($request->password),
-           ]);
-
-           $token = $user->createToken('auth_token')->plainTextToken;
-
-           return response()->json([
-               'access_token' => $token,
-               'token_type' => 'Bearer',
-           ]);
        }
 
     // Inicio de sesión de usuarios
     public function login(Request $request)
     {
-
-        $response = ["status"=>0, "message"=>"", "access_token"=>"","token_type"=>"Bearer" ];
 
         $data = json_decode($request->getContent());
 
@@ -51,43 +55,23 @@ class AuthController extends Controller
 
         if($user){
             if(Hash::check($data->password,$user->password)){
-                $token = $user->createToken('auth_token')->plainTextToken;
-                $response['status'] = 200;
-                $response['message'] = 'Inicio exitoso';
-                $response['access_token'] = $token;
+
+                if($user->usertype_id != 2){
+                    $response = ['status'=> 400,'message' => 'Su perfil de usuario es inválido' ];
+                } else if ($user->status != 1){
+                    $response = ['status'=> 403,'message' => 'Su usuario se encuentra inactivo' ];
+                } else{
+                    $token = $user->createToken('auth_token')->plainTextToken;
+                    $response = ['status'=> 200,'message' => 'Inicio de sesión exitoso, Bienvenido!', 'user' => $user, 'token' => $token, 'token_type'=>'Bearer'];
+                }
 
             }else{
-                $response['message'] = 'Credenciales incorrectas.';
+                $response = ['status'=> 400,'message'=>'Credenciales incorrectas.'];
             }
         }else{
-            $response['message'] = 'User not found';
+           $response = ['status'=> 400, 'message' => 'Usuario no encontrado'];
         }
        return response()->json($response);
-
-        // $credentials = $request->only('email', 'password');
-
-        // if (!Auth::attempt($credentials)) {
-        //     // Agregar registro de error
-
-        //     return response()->json(['message' => 'Invalid login details'], 401);
-        // }
-
-        // $user = Auth::user();
-        // if (!$user) {
-        //     // Manejar el caso en el que Auth::user() devuelve null
-
-        //     return response()->json(['message' => 'User not found'], 401);
-        // }
-
-        // $token = $user->createToken('auth_token')->plainTextToken;
-
-        // // Agregar registro de éxito
-
-
-        // return response()->json([
-        //     'access_token' => $token,
-        //     'token_type' => 'Bearer',
-        // ]);
     }
 
 
