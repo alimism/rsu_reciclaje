@@ -90,48 +90,89 @@ class VehiclesController extends Controller
      */
     public function show(string $id)
     {
+        // Encuentra el vehículo por su ID y carga sus ocupantes con estado 1 , osea que su asignacion sigue disponible
+        $vehicle = Vehicle::with(['occupants' => function ($query) {
+            $query->where('status', 1);
+        }])->findOrFail($id);
 
-        // manejo con findOrFail para asegurar que existe el registro antes de continuar con la demas logica
-        $vehicle = Vehicle::with('occupants')->findOrFail($id);
-        // Filtrar usuarios por tipo 'Conductor' (usertype_id = 3) y 'Recolector' (usertype_id = 4)
+        // Obtiene todos los usuarios con tipo 'Conductor' (usertype_id = 3)
         $conductores = User::where('usertype_id', 3)->get();
+
+        // Obtiene todos los usuarios con tipo 'Recolector' (usertype_id = 4)
         $recolectores = User::where('usertype_id', 4)->get();
 
-        return view('admin.vehicles.show', compact('vehicle', 'conductores', 'recolectores'));
+        // Obtiene la capacidad del vehículo
+        $capacity = $vehicle->capacity;
+
+        // Retorna la vista 'admin.vehicles.show' con los datos del vehículo, conductores, recolectores y capacidad
+        return view('admin.vehicles.show', compact('vehicle', 'conductores', 'recolectores', 'capacity'));
     }
 
     public function assignOccupants(Request $request, $id)
     {
+        // Encuentra el vehículo por su ID
         $vehicle = Vehicle::findOrFail($id);
-    
-        // Eliminar todos los ocupantes actuales del vehículo para reutilizar el metodo
-        $vehicle->occupants()->delete();
-    
-        // Asignar los nuevos conductores y recolectores al vehículo
-        $conductor = $request->input('conductor');
-        $recolectores = $request->input('recolectores', []);
-    
-        if ($conductor) {
-            $vehicle->occupants()->create([
-                'user_id' => $conductor,
-                'usertype_id' => 3,
-                'status' => 1,
-            ]);
+
+        // Obtiene los ocupantes actuales del vehículo
+        $currentOccupants = $vehicle->occupants;
+
+        // Obtiene el ID del conductor del request
+        $conductorId = $request->input('conductor');
+
+        // Obtiene los IDs de los recolectores del request
+        $recolectoresIds = $request->input('recolectores', []);
+
+        // Combina el ID del conductor y los IDs de recolectores en una colección y filtra elementos vacíos
+        $newOccupants = collect([$conductorId])->merge($recolectoresIds)->filter();
+
+        // Validar que la cantidad de nuevos ocupantes no exceda la capacidad del vehículo
+        $totalOccupants = $newOccupants->count();
+        if ($totalOccupants > $vehicle->capacity) {
+            return redirect()->route('admin.vehicles.index')->with('error', 'La cantidad de ocupantes excede la capacidad del vehículo.');
         }
-    
-        foreach ($recolectores as $recolector) {
-            $vehicle->occupants()->create([
-                'user_id' => $recolector,
-                'usertype_id' => 4,
-                'status' => 1,
-            ]);
+
+        // Actualiza el estado a 0 de los ocupantes antiguos que no están en la nueva lista de ocupantes
+        foreach ($currentOccupants as $occupant) {
+            if (!$newOccupants->contains($occupant->user_id)) {
+                $occupant->update(['status' => 0]);
+            }
         }
-    
+
+        // Asigna el nuevo conductor al vehículo
+        if ($conductorId) {
+            // Si el conductor ya existe, actualiza su estado a 1
+            $existingConductor = $currentOccupants->where('user_id', $conductorId)->where('usertype_id', 3)->first();
+            if ($existingConductor) {
+                $existingConductor->update(['status' => 1]);
+            } else {
+                // Si no existe, crea un nuevo registro de ocupante con tipo 'Conductor'
+                $vehicle->occupants()->create([
+                    'user_id' => $conductorId,
+                    'usertype_id' => 3,
+                    'status' => 1,
+                ]);
+            }
+        }
+
+        // Asigna los nuevos recolectores al vehículo
+        foreach ($recolectoresIds as $recolectorId) {
+            // Si el recolector ya existe, actualiza su estado a 1
+            $existingRecolector = $currentOccupants->where('user_id', $recolectorId)->where('usertype_id', 4)->first();
+            if ($existingRecolector) {
+                $existingRecolector->update(['status' => 1]);
+            } else {
+                // Si no existe, crea un nuevo registro de ocupante con tipo 'Recolector'
+                $vehicle->occupants()->create([
+                    'user_id' => $recolectorId,
+                    'usertype_id' => 4,
+                    'status' => 1,
+                ]);
+            }
+        }
+
+        // Redirige al índice de vehículos con un mensaje de éxito
         return redirect()->route('admin.vehicles.index', $id)->with('success', 'Ocupantes asignados correctamente');
     }
-    
-
-
 
     /**
      * Show the form for editing the specified resource.
