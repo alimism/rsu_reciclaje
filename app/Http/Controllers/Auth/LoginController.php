@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
 
-    use AuthenticatesUsers;
-
+    use AuthenticatesUsers {
+        attemptLogin as traitAttemptLogin;
+    }
     protected $redirectTo = '/home';
     public function __construct()
     {
@@ -20,7 +21,7 @@ class LoginController extends Controller
 
     protected function validateLogin(Request $request)
     {
-        
+
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
@@ -31,12 +32,18 @@ class LoginController extends Controller
 
     protected function attemptLogin(Request $request)
     {
-        $user = \App\Models\User::where('email', $request->email)->first();
+        // Realizar autenticación utilizando el método del trait
+        if (!$this->traitAttemptLogin($request)) {
+            return false;
+        }
+
+        $user = Auth::user();
 
         if ($user->usertype_id != 1) {
+            $this->guard()->logout();
             return $this->sendFailedLoginResponse($request, 'no-admin');
         }
 
-        return redirect()->intended($this->redirectTo);
+        return true;
     }
 }
