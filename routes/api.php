@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\APIS_APP\AuthController;
+use App\Http\Controllers\APIS_APP\ZonesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,5 +24,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 /* RUTAS API DE AUTENTICACION */
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+
+//Zonas
+Route::get('listzones', [ZonesController::class, 'listZones']);
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');//proteger ruta logout
+Route::post('zones', [ZonesController::class, 'zones'])->middleware('auth:sanctum');//proteger ruta logout
 
 
