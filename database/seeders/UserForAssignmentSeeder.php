@@ -22,7 +22,9 @@ class UserForAssignmentSeeder extends Seeder
             'email' => 'conductor1@example.com',
             'license' => 'ABC123',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
             'usertype_id' => 3,
+            'status' => 1,
         ]);
 
         User::create([
@@ -32,9 +34,10 @@ class UserForAssignmentSeeder extends Seeder
             'birthdate' => '1986-02-02',
             'email' => 'conductor2@example.com',
             'license' => 'DEF456',
-
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
             'usertype_id' => 3,
+            'status' => 1,
 
         ]);
 
@@ -46,7 +49,9 @@ class UserForAssignmentSeeder extends Seeder
             'birthdate' => '1987-03-03',
             'email' => 'recolector1@example.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
             'usertype_id' => 4,
+            'status' => 1,
 
         ]);
 
@@ -57,8 +62,9 @@ class UserForAssignmentSeeder extends Seeder
             'birthdate' => '1988-04-04',
             'email' => 'recolector2@example.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
             'usertype_id' => 4,
-
+            'status' => 1,
         ]);
     }
 }

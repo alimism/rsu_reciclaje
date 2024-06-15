@@ -4,37 +4,46 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
 
-    use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
+    use AuthenticatesUsers {
+        attemptLogin as traitAttemptLogin;
+    }
     protected $redirectTo = '/home';
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
+    }
+
+    protected function validateLogin(Request $request)
+    {
+
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ], [
+            'password.required' => 'Debe establecer una contraseña antes de iniciar sesión. Contacte al administrador para habilitar su cuenta y obtener una contraseña.',
+        ]);
+    }
+
+    protected function attemptLogin(Request $request)
+    {
+        // Realizar autenticación utilizando el método del trait
+        if (!$this->traitAttemptLogin($request)) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        if ($user->usertype_id != 1) {
+            $this->guard()->logout();
+            return $this->sendFailedLoginResponse($request, 'no-admin');
+        }
+
+        return true;
     }
 }

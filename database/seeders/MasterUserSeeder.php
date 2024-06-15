@@ -18,9 +18,10 @@ class MasterUserSeeder extends Seeder
             'name' => 'Juan',
             'lastname' => 'Perez',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345678'), 
+            'password' => Hash::make('12345678'),
             'email_verified_at' => now(),
-            'usertype_id' => 1, // Asegúrate de que el ID 1 corresponde a 'Administrador' en tu tabla 'usertypes'
+            'usertype_id' => 1,
+            'status' => 1,
         ]);
     }
 }
