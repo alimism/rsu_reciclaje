@@ -24,10 +24,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 /* RUTAS API DE AUTENTICACION */
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');//proteger ruta logout
 //Zonas
 Route::get('listzones', [ZonesController::class, 'listZones']);
-Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');//proteger ruta logout
+
 Route::post('zones', [ZonesController::class, 'zones'])->middleware('auth:sanctum');//proteger ruta logout
 
 

@@ -41,7 +41,10 @@ class ZonesController extends Controller
     public function show(string $id)
     {
         $zone = Zone::findOrFail($id);
-        $zonecoords = Zonecoord::all();
+        // $zonecoords = Zonecoord::all();
+        // Filtra las coordenadas que pertenecen a la zona específica
+        $zonecoords = Zonecoord::where('zone_id', $id)->get();
+
         return view('admin.zones.show', compact('zone','zonecoords'));
     }
 
