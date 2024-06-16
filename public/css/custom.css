@@ -76,3 +76,6 @@ body {
     text-indent: 8px; 
 }
 
+.nav-treeview .nav-item .nav-link .fas {
+    text-indent: 0;
+}
