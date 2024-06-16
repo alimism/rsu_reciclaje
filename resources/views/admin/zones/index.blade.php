@@ -43,7 +43,8 @@
                             <td>{{ $zone->description }}</td>
 
                             <td>
-                                <a class="btn btn-secondary" href="{{ route('admin.zones.show', $zone->id) }}" data-id="{{ $zone->id }}"><i class="fas fa-map"></i></a>
+                                <a class="btn btn-secondary" href="{{ route('admin.zones.show', $zone->id) }}"
+                                    data-id="{{ $zone->id }}"><i class="fas fa-map"></i></a>
                             </td>
 
                             <td>
@@ -68,6 +69,12 @@
             </table>
         </div>
         <div class="card-footer"></div>
+    </div>
+
+    <div class="card">
+        <div class="card col-12 p-2" style="min-height: 400px">
+            <div id="map" style="height: 400px; width: 100%;"></div>
+        </div>
     </div>
 
     {{-- <!-- Button trigger modal -->
@@ -152,6 +159,50 @@
             });
         });
     </script>
+
+    <script>
+        var perimeters = @json($perimeter);
+
+        function initMap() {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+
+                var mapOptions = {
+                    center: {
+                        lat: lat,
+                        lng: lng
+                    },
+                    zoom: 15
+                };
+
+                var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+
+                var colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
+
+
+                perimeters.forEach(function(perimeter, index) {
+                    var perimeterCoords = perimeter.coords;
+                    var color = colors[index % colors.length]; // Obtiene un color de la matriz de colores
+
+                    // Crea un objeto de polígono con los puntos del perímetro
+                    var perimeterPolygon = new google.maps.Polygon({
+                        paths: perimeterCoords,
+                        strokeColor: color,
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: color,
+                        fillOpacity: 0.35,
+                        map: map // Asigna el mapa al polígono para mostrarlo
+                    });
+                });
+            });
+        }
+        window.initMap = initMap; // Definimos initMap globalmente
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initMap" async
+        defer></script>
 
     @if (session('success'))
         <script>

@@ -3,6 +3,9 @@
 @section('title', 'Asignación de Personal')
 
 @section('content')
+
+    <a href="{{ route('admin.zones.index') }}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i>
+        Regresar</a>
     <div class="p-2"> </div>
     <div class="card">
         <div class="card-header">Perimetro de la Zona
@@ -115,44 +118,64 @@
                 return ['lat' => $coord->latitude, 'lng' => $coord->longitude];
             }) !!};
 
-            if (perimeterCoords.length > 0) {
+            function displayMap(lat, lng, perimeterCoords) {
                 var mapOptions = {
                     center: {
-                        lat: perimeterCoords[0].lat,
-                        lng: perimeterCoords[0].lng
+                        lat: lat,
+                        lng: lng
                     },
                     zoom: 18
                 };
 
                 var map = new google.maps.Map(document.getElementById('mapShow'), mapOptions);
 
-                var perimeterPolygon = new google.maps.Polygon({
-                    paths: perimeterCoords,
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: '#FF0000',
-                    fillOpacity: 0.35
-                });
+                if (perimeterCoords.length > 0) {
+                    var perimeterPolygon = new google.maps.Polygon({
+                        paths: perimeterCoords,
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35
+                    });
 
-                perimeterPolygon.setMap(map);
+                    perimeterPolygon.setMap(map);
 
-                var bounds = new google.maps.LatLngBounds();
-                perimeterCoords.forEach(function(coord) {
-                    bounds.extend(coord);
-                });
+                    var bounds = new google.maps.LatLngBounds();
+                    perimeterCoords.forEach(function(coord) {
+                        bounds.extend(coord);
+                    });
 
-                map.fitBounds(bounds);
+                    map.fitBounds(bounds);
 
-                // Opcional: Ajusta el zoom después de centrar el mapa
-                google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
-                    this.setZoom(16); // Ajusta el nivel de zoom aquí
-                });
+                    // Opcional: Ajusta el zoom después de centrar el mapa
+                    google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
+                        this.setZoom(16); // Ajusta el nivel de zoom aquí
+                    });
 
-                var centro = bounds.getCenter();
-                map.panTo(centro);
+                    var centro = bounds.getCenter();
+                    map.panTo(centro);
+                }
+            }
+
+            if (perimeterCoords.length > 0) {
+                displayMap(perimeterCoords[0].lat, perimeterCoords[0].lng, perimeterCoords);
             } else {
-                console.error('No perimeter coordinates found');
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var currentLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    displayMap(currentLocation.lat, currentLocation.lng, []);
+                }, function() {
+                    console.error('Error al obtener la ubicación actual');
+                    var defaultLocation = {
+                        lat: -34.397,
+                        lng: 150.644
+                    }; // Coordenadas por defecto
+                    displayMap(defaultLocation.lat, defaultLocation.lng, []);
+                    alert('No se pudo obtener la ubicación actual y no hay coordenadas de perímetro disponibles.');
+                });
             }
         }
 

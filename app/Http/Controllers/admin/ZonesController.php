@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Zone;
 use App\Models\Zonecoord;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ZonesController extends Controller
 {
@@ -15,7 +16,30 @@ class ZonesController extends Controller
     public function index()
     {
         $zones = Zone::all();
-        return view('admin.zones.index', compact('zones'));
+
+        $zonesMap = DB::table('zones')
+            ->leftJoin('zonecoords', 'zones.id', '=', 'zonecoords.zone_id')
+            ->select('zones.name as zone', 'zonecoords.latitude', 'zonecoords.longitude')
+            ->get();
+
+        // Agrupa las coordenadas por zona
+        $groupedZones = $zonesMap->groupBy('zone');
+
+        $perimeter = $groupedZones->map(function ($zone) {
+            $coords = $zone->map(function ($item) {
+                return [
+                    'lat' => $item->latitude,
+                    'lng' => $item->longitude,
+                ];
+            })->toArray(); // Convertir la colección de coordenadas en una matriz
+
+            return [
+                'name' => $zone[0]->zone, // Cambiar 'zone' por 'name'
+                'coords' => $coords,
+            ];
+        })->values(); // Reindexar las claves numéricas del resultado
+
+        return view('admin.zones.index', compact('zones', 'perimeter'));
     }
 
     /**
@@ -45,7 +69,7 @@ class ZonesController extends Controller
         // Filtra las coordenadas que pertenecen a la zona específica
         $zonecoords = Zonecoord::where('zone_id', $id)->get();
 
-        return view('admin.zones.show', compact('zone','zonecoords'));
+        return view('admin.zones.show', compact('zone', 'zonecoords'));
     }
 
     public function edit($id)
