@@ -11,75 +11,139 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    //
-       // Registro de usuarios
-       public function register(Request $request)
-       {
+    //Registro de usuarios
+    public function register(Request $request)
+    {
+        try {
+            // Validación de  datos de entrada
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'name' => 'required|string|max:255',
+                'lastname' => 'required|string|max:255',
+            ]);
 
-        //$response = ["status"=>0, "message"=>"", "token"=>"","token_type"=>"Bearer" ];
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => $validator->errors()->first(),
+                ], 400);
+            }
 
-           $validator = Validator::make($request->all(), [
-               //'name' => 'required|string|max:255',
-               'email' => 'required|string|email|max:255|unique:users',
-               //'password' => 'required|string|min:8',
-           ]);
+            // validación es exitosa
+            $user = User::create([
+                'name' => $request->name,
+                'lastname' => $request->lastname,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'usertype_id' => 2,
+                'status' => 1,
+                'zone_id'=>$request->zone_id
+            ]);
 
-           if ($validator->fails()) {
-                //$mensaje = $validator->errors();
-                $response = ['status'=> 400,'message' => 'El email ingresado ya está siendo usado' ];
-           }else{
-                $user = User::create([
-                    'name' => $request->name,
-                    'lastname' => $request->lastname,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                    'usertype_id' => 2,
-                    'status' => 1,
-                ]);
 
-                $token = $user->createToken('auth_token')->plainTextToken;
-                $response = ['status' => 200, 'message'=>'Registro exitoso, Bienvenido!','token' => $token,'user' => $user ] ;
+            $token = $user->createToken('auth_token')->plainTextToken; // Generamos un token para el usuario recién registrado
 
-           }
-           return response()->json($response);
-
-       }
+            // Respuesta exitosa con el token y los datos del usuario
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Registro exitoso, Bienvenido!',
+                'token' => $token,
+                'user' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            // Manejar cualquier excepción que ocurra durante el proceso de registro
+            return response()->json([
+                'status' => 'error',
+                'code' => 500,
+                'message' => 'Error interno del servidor',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     // Inicio de sesión de usuarios
     public function login(Request $request)
     {
+        try {
+            $data = json_decode($request->getContent());
+            $user = User::where('email', $data->email)->first();
 
-        $data = json_decode($request->getContent());
-
-        $user = User::where('email',$data->email)->first();
-
-        if($user){
-            if(Hash::check($data->password,$user->password)){
-
-                if($user->usertype_id != 2){
-                    $response = ['status'=> 400,'message' => 'Su perfil de usuario es inválido' ];
-                } else if ($user->status != 1){
-                    $response = ['status'=> 403,'message' => 'Su usuario se encuentra inactivo' ];
-                } else{
-                    $token = $user->createToken('auth_token')->plainTextToken;
-                    $response = ['status'=> 200,'message' => 'Inicio de sesión exitoso, Bienvenido!', 'user' => $user, 'token' => $token, 'token_type'=>'Bearer'];
-                }
-
-            }else{
-                $response = ['status'=> 400,'message'=>'Credenciales incorrectas.'];
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => 'Usuario no encontrado'
+                ], 400);
             }
-        }else{
-           $response = ['status'=> 400, 'message' => 'Usuario no encontrado'];
+
+            if (!Hash::check($data->password, $user->password)) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => 'Credenciales incorrectas'
+                ], 400);
+            }
+
+            if ($user->usertype_id != 2) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => 'Su perfil de usuario es inválido'
+                ], 400);
+            }
+
+            if ($user->status != 1) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 403,
+                    'message' => 'Su usuario se encuentra inactivo'
+                ], 403);
+            }
+
+            //Validaciones exitosas
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Inicio de sesión exitoso, Bienvenido!',
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'Bearer'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 500,
+                'message' => 'Error interno del servidor',
+                'error' => $e->getMessage()
+            ], 500);
         }
-       return response()->json($response);
-    }
-
-    public function logout(Request $request){
-
-        $request->user()->currentAccesToken()->delete();
-        return response()->json(['status'=>200,'message'=>'Sesion cerrada']);
     }
 
 
+    //Cerrar Sesión
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete(); // Eliminar el token de acceso actual del usuario
 
+            return response()->json([
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'Sesión cerrada exitosamente',
+                'data' => null
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 500,
+                'message' => 'Error al cerrar sesión',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

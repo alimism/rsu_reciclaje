@@ -25,9 +25,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');//proteger ruta logout
-//Zonas
-Route::get('listzones', [ZonesController::class, 'listZones']);
 
-Route::post('zones', [ZonesController::class, 'zones'])->middleware('auth:sanctum');//proteger ruta logout
+/*Zonas*/
+
+// Route::get('listzones', [ZonesController::class, 'listZones']);
+Route::get('listzones', [ZonesController::class, 'listZones'])->middleware('api.key'); // Zonas protegidas
+
+
+Route::post('coordzonesuser', [ZonesController::class, 'coordZoneUser'])->middleware('auth:sanctum');//proteger ruta logout
 
 
