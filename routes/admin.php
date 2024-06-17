@@ -2,6 +2,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\BrandsController;
 use App\Http\Controllers\admin\BrandModelsController;
+use App\Http\Controllers\admin\RoutesController;
+use App\Http\Controllers\admin\RoutezonesController;
 use App\Http\Controllers\admin\UsersController;
 use App\Http\Controllers\admin\UsertypesController;
 use App\Http\Controllers\admin\VehiclesController;
@@ -27,4 +29,7 @@ Route::get('modelsbybrand/{id}', [BrandModelsController::class, 'modelsbybrand']
 Route::resource('users',UsersController::class)->names('admin.users');
 Route::resource('zones',ZonesController::class)->names('admin.zones');
 Route::resource('zonecoords',ZonecoordsController::class)->names('admin.zonecoords');
+Route::resource('routes',RoutesController::class)->names('admin.routes');
+Route::post('routes/{route}/assignZone', [RoutezonesController::class, 'assignZone'])->name('admin.routes.assignZone');
+Route::delete('routes/{route}/unassignZone/{zone}', [RoutezonesController::class, 'unassignZone'])->name('admin.routes.unassignZone');
 ?>

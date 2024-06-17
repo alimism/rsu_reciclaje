@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MasterUserSeeder::class);
         $this->call(UserForAssignmentSeeder::class);
         $this->call(BrandModelSeeder::class);
+        $this->call(VehicleSeeder::class);
         // $this->call(ZoneSeeder::class);
 
     }

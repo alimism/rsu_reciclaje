@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Asignación de Personal')
+@section('title', 'Asignación de Coordenadas')
 
 @section('content')
 

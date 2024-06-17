@@ -372,7 +372,7 @@ return [
         ],
         [
             'text' => 'Rutas',
-            'url' => '#',
+            'url' => '/admin/routes',
             'icon' => 'fas fa-fw fa-route'
         ],
         [
