@@ -5,7 +5,7 @@
 @section('content')
     <div class="p-2"></div>
     <div class="card">
-        <div class="card-header"> 
+        <div class="card-header">
 
 
             {{-- Primera version con ruta hacia otra pagina para la creacion de una marca
