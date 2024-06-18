@@ -34,4 +34,7 @@ Route::get('listzones', [ZonesController::class, 'listZones'])->middleware('api.
 
 Route::post('coordzonesuser', [ZonesController::class, 'coordZoneUser'])->middleware('auth:sanctum');//proteger ruta logout
 
+Route::post('routezonesuser', [ZonesController::class, 'routeZoneUser'])->middleware('auth:sanctum');//proteger ruta logout
+
+
 
