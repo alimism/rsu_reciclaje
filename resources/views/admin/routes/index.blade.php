@@ -38,8 +38,8 @@
                                 <a class="btn btn-secondary btn-sm" href="{{ route('admin.routes.show', $route->id) }}"><i
                                         class="fas fa-map-signs"></i></a>
                             </td>
-                            <td><a class="btn btn-primary btnEditar btn-sm" data-id="{{ $route->id }}"
-                                    ><i class="fas fa-edit"></i></a>
+                            <td><a class="btn btn-primary btnEditar btn-sm" data-id="{{ $route->id }}"><i
+                                        class="fas fa-edit"></i></a>
                             </td>
                             <td>
                                 <form action="{{ route('admin.routes.destroy', $route->id) }}" method="post"
@@ -64,7 +64,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Formulario de Modelo</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Formulario de Ruta</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -136,40 +136,7 @@
                 });
             });
         });
-
-        function initializeMap() {
-            var chiclayoCoords = {
-                lat: -6.7737,
-                lng: -79.8409
-            }; // Coordenadas de Chiclayo
-            var mapOptions = {
-                center: chiclayoCoords,
-                zoom: 15 // Ajuste el nivel de zoom inicial para que esté más cerca
-            };
-            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-            map.addListener('click', function(event) {
-                addMarker(event.latLng, map);
-            });
-
-            function addMarker(location, map) {
-                new google.maps.Marker({
-                    position: location,
-                    map: map
-                });
-                if (!$('#latitude_start').val()) {
-                    $('#latitude_start').val(location.lat());
-                    $('#longitude_start').val(location.lng());
-                } else {
-                    $('#latitude_end').val(location.lat());
-                    $('#longitude_end').val(location.lng());
-                }
-            }
-        }
     </script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initializeMap" async
-        defer></script>
 
     @if (session('success'))
         <script>
