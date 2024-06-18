@@ -79,3 +79,8 @@ body {
 .nav-treeview .nav-item .nav-link .fas {
     text-indent: 0;
 }
+
+/* custom.css */
+.preloader img.img-circle {
+    border-radius: 0 !important;
+}

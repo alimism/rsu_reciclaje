@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Route;
+use App\Models\Routezone;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 
@@ -27,23 +28,20 @@ class RoutezonesController extends Controller
 
     public function assignZone(Request $request, $routeId)
     {
-        $route = Route::findOrFail($routeId);
         $zoneId = $request->input('zone_id');
-        $zone = Zone::findOrFail($zoneId);
-
-        $route->zones()->attach($zone);
+        RouteZone::create([
+            'route_id' => $routeId,
+            'zone_id' => $zoneId
+        ]);
 
         return redirect()->route('admin.routes.show', $routeId)->with('success', 'Zona asignada con éxito.');
     }
 
     public function unassignZone($routeId, $zoneId)
     {
-        $route = Route::findOrFail($routeId);
-        $zone = Zone::findOrFail($zoneId);
+        RouteZone::where('route_id', $routeId)->where('zone_id', $zoneId)->delete();
 
-        $route->zones()->detach($zone);
-
-        return redirect()->route('admin.routes.show', $routeId)->with('success', 'Zona quitada con éxito.');
+        return redirect()->route('admin.routes.show', $routeId)->with('success', 'Zona desasignada con éxito.');
     }
 
     /**

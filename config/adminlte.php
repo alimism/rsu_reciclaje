@@ -113,11 +113,12 @@ return [
         'enabled' => true,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'path' => 'favicons/ReciclaUSATLoader.png',
+            'alt' => 'Reciclaje Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 60,
+            'width' => 268  ,
             'height' => 60,
+            
         ],
     ],
 

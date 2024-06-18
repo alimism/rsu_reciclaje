@@ -24,7 +24,8 @@ class RoutesController extends Controller
      */
     public function create()
     {
-        return view('admin.routes.create');
+        $zones = Zone::all();
+        return view('admin.routes.create', compact('zones'));
     }
 
     /**
@@ -53,24 +54,37 @@ class RoutesController extends Controller
     /**
      * Display the specified resource.
      */
+
     public function show($id)
     {
         $route = Route::findOrFail($id);
-        $availableZones = Zone::whereNotIn('id', $route->zones->pluck('id'))->get();
-        $assignedZones = $route->zones;
+        $assignedZones = $route->zones->map(function ($zone) {
+            return [
+                'id' => $zone->id,
+                'name' => $zone->name,
+                'coords' => $zone->coords->map(function ($coord) {
+                    return [
+                        'latitude' => $coord->latitude,
+                        'longitude' => $coord->longitude
+                    ];
+                })
+            ];
+        });
 
-        return view('admin.routes.show', compact('route', 'availableZones', 'assignedZones'));
+        $availableZones = Zone::whereNotIn('id', $assignedZones->pluck('id'))->get();
+
+        return view('admin.routes.show', compact('route', 'assignedZones', 'availableZones'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
+
     public function edit($id)
     {
         $route = Route::findOrFail($id);
         return view('admin.routes.edit', compact('route'));
     }
-
     /**
      * Update the specified resource in storage.
      */
