@@ -71,7 +71,7 @@ class RoutesController extends Controller
             ];
         });
 
-        $availableZones = Zone::whereNotIn('id', $assignedZones->pluck('id'))->get();
+        $availableZones = Zone::whereDoesntHave('routes')->get();
 
         return view('admin.routes.show', compact('route', 'assignedZones', 'availableZones'));
     }
