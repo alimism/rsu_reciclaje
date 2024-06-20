@@ -17,19 +17,12 @@ class VehicleroutesController extends Controller
      */
     public function index()
     {
-        // Obtener las programaciones de rutas de vehículos
-        $vehicleroutes = VehicleRoute::with(['vehicle', 'route', 'routeStatus'])->get();
+        $vehicleroutes = VehicleRoute::all();
+        $minDate = $vehicleroutes->min('date_route');
+        $maxDate = $vehicleroutes->max('date_route');
 
-        // Obtener los vehículos y rutas para los filtros
-        $vehicles = Vehicle::pluck('name', 'id');
-        $routes = Route::pluck('name', 'id');
-        $routeStatuses = RouteStatus::all();
-
-        return view('admin.vehicleroutes.index', compact('vehicleroutes', 'vehicles', 'routes', 'routeStatuses'));
+        return view('admin.vehicleroutes.index', compact('vehicleroutes', 'minDate', 'maxDate'));
     }
-
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -48,7 +41,6 @@ class VehicleroutesController extends Controller
     public function store(Request $request)
     {
 
-        dd($request->all()); // Añadir esta línea para depuración
 
         $request->validate([
             'date_start' => 'required|date',
@@ -80,6 +72,9 @@ class VehicleroutesController extends Controller
                 'description' => $request->description,
             ]);
         }
+
+        dd($request->all()); // Añadir esta línea para depuración
+
 
         return redirect()->route('admin.vehicleroutes.index')->with('success', 'Programación creada con éxito.');
     }

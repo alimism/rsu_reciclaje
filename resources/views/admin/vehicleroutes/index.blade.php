@@ -2,12 +2,9 @@
 
 @section('title', 'Programación de Rutas de Vehiculos')
 
-
 @section('plugins.DateRangePicker', true)
 @section('plugins.TempusDominusBs4', true)
 @section('plugins.Datatables', true)
-@section('plugins.DataTables-SearchPanes', true)
-@section('plugins.DataTables-Select', true)
 
 @section('content')
     <div class="p-2"></div>
@@ -17,12 +14,33 @@
             <h4>Listado de Programaciones</h4>
         </div>
         <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text" id="dateRange" class="form-control" placeholder="Seleccione rango de fechas">
+                </div>
+                <div class="col-md-4">
+                    <select id="vehicleFilter" class="form-control">
+                        <option value="">Todos los vehículos</option>
+                        @foreach ($vehicleroutes->pluck('vehicle.name')->unique() as $vehicle)
+                            <option value="{{ $vehicle }}">{{ $vehicle }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="routeFilter" class="form-control">
+                        <option value="">Todas las rutas</option>
+                        @foreach ($vehicleroutes->pluck('route.name')->unique() as $route)
+                            <option value="{{ $route }}">{{ $route }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             <table class="table" id="datatable">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Fecha</th>
-                        <th>Hora</th>                        
+                        <th>Hora</th>
                         <th>Estado</th>
                         <th>Vehículo</th>
                         <th>Ruta</th>
@@ -62,8 +80,6 @@
     </div>
 
     <!-- Modal -->
-
-
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -80,30 +96,85 @@
             </div>
         </div>
     </div>
-
-
 @stop
 
 @section('js')
     <script>
         $(document).ready(function() {
-            $('#datatable').DataTable({
+            var minDate = "{{ $minDate }}";
+            var maxDate = "{{ $maxDate }}";
+
+            // Inicializar el DateRangePicker
+            $('#dateRange').daterangepicker({
+                locale: {
+                    format: 'YYYY-MM-DD',
+                    cancelLabel: 'Clear'
+                },
+                startDate: minDate,
+                endDate: maxDate,
+                opens: 'left',
+                autoUpdateInput: false
+            });
+
+            // Configuración de DataTables
+            var table = $('#datatable').DataTable({
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.13.5/i18n/es-MX.json"
                 },
-                dom: 'Plfrtip', // Define el layout con SearchPanes
-                searchPanes: {
-                    cascadePanes: true,
-                    viewTotal: true
-                },
-                columnDefs: [{
-                    searchPanes: {
-                        show: true
-                    },
-                    targets: [4, 5] // Define los índices de las columnas que deseas incluir en SearchPanes
-                }]
+                paging: true,
             });
 
+            // Función para actualizar la tabla y los filtros
+            function updateTableAndFilters() {
+                table.draw();
+            }
+
+            // Manejar eventos del DateRangePicker
+            $('#dateRange').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format(
+                    'YYYY-MM-DD'));
+                updateTableAndFilters();
+            });
+
+            $('#dateRange').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+                updateTableAndFilters();
+            });
+
+            // Filtro personalizado para rango de fechas
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var dateRange = $('#dateRange').val().split(' - ');
+                var min = dateRange[0] ? moment(dateRange[0], 'YYYY-MM-DD') : null;
+                var max = dateRange[1] ? moment(dateRange[1], 'YYYY-MM-DD') : null;
+                var date = moment(data[1], 'YYYY-MM-DD'); // Asume que la fecha está en la segunda columna
+
+                if ((min === null && max === null) ||
+                    (min === null && date <= max) ||
+                    (min <= date && max === null) ||
+                    (min <= date && date <= max)) {
+                    return true;
+                }
+                return false;
+            });
+
+            // Manejar los filtros de select
+            $('#vehicleFilter, #routeFilter').on('change', function() {
+                updateTableAndFilters();
+            });
+
+            // Agregar la funcionalidad de filtro de select
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var vehicle = $('#vehicleFilter').val();
+                var route = $('#routeFilter').val();
+
+                if ((vehicle === '' || data[4] === vehicle) &&
+                    (route === '' || data[5] === route)) {
+                    return true;
+                }
+                return false;
+            });
+
+            // Botones y funcionalidades adicionales
             $('#btnNuevo').click(function() {
                 $.ajax({
                     url: "{{ route('admin.vehicleroutes.create') }}",
