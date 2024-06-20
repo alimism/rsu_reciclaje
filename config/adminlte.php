@@ -116,9 +116,9 @@ return [
             'path' => 'favicons/ReciclaUSATLoader.png',
             'alt' => 'Reciclaje Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 268  ,
+            'width' => 268,
             'height' => 60,
-            
+
         ],
     ],
 
@@ -290,7 +290,7 @@ return [
             // Otros scripts
         ],
     ],
-    
+
 
     /*
     |--------------------------------------------------------------------------
@@ -378,7 +378,7 @@ return [
         ],
         [
             'text' => 'Programación',
-            'url' => '#',
+            'url' => '/admin/vehicleroutes',
             'icon' => 'fas fa-fw fa-calendar-alt'
         ],
     ],
@@ -439,6 +439,41 @@ return [
                 ],
             ],
         ],
+        'DataTables-SearchPanes' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => '//cdn.datatables.net/searchpanes/1.4.0/js/dataTables.searchPanes.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => '//cdn.datatables.net/searchpanes/1.4.0/js/searchPanes.bootstrap4.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => '//cdn.datatables.net/searchpanes/1.4.0/css/searchPanes.bootstrap4.min.css',
+                ],
+            ],
+        ],
+        'DataTables-Select' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => '//cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => '//cdn.datatables.net/select/1.3.3/css/select.bootstrap4.min.css',
+                ],
+            ],
+        ],
         'Select2' => [
             'active' => true,
             'files' => [
@@ -475,7 +510,8 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@11',                ],
+                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@11',
+                ],
             ],
         ],
         'Pace' => [
@@ -490,6 +526,41 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
+                ],
+            ],
+        ],
+        'DateRangePicker' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => 'vendor/moment/moment.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => 'vendor/daterangepicker/daterangepicker.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'vendor/daterangepicker/daterangepicker.css',
+                ],
+            ],
+        ],
+        'TempusDominusBs4' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => 'vendor/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'vendor/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css',
                 ],
             ],
         ],

@@ -9,6 +9,8 @@ class Routestatus extends Model
 {
     use HasFactory;
 
+    protected $table = 'routestatus';  
+
     protected $fillable = [
         'name',
         'description'

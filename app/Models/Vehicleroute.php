@@ -11,10 +11,12 @@ class Vehicleroute extends Model
 
     protected $fillable = [
         'date_route',
+        'time_route',
         'description',
         'routestatus_id',
+        'vehicle_id',
         'route_id',
-        'vehicle_id'
+
     ];
 
     public function route()
@@ -31,4 +33,6 @@ class Vehicleroute extends Model
     {
         return $this->belongsTo(Routestatus::class, 'routestatus_id');
     }
+
+    protected $guarded = [];
 }

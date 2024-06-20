@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserForAssignmentSeeder::class);
         $this->call(BrandModelSeeder::class);
         $this->call(VehicleSeeder::class);
+        $this->call(RoutestatusSeeder::class);
         // $this->call(ZoneSeeder::class);
 
     }
