@@ -17,7 +17,8 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        // $users = User::all();
+        $users = User::where('usertype_id','!=',2)->get();
         return view('admin.users.index', compact('users'));
     }
 
@@ -28,7 +29,8 @@ class UsersController extends Controller
     {
         //
 
-        $usertype = Usertype::pluck('name', 'id');
+        // $usertype = Usertype::pluck('name', 'id');
+        $usertype = Usertype::where('id', '!=', 2)->pluck('name', 'id');
         $zone = Zone::pluck('name', 'id');
         return view('admin.users.create', compact('usertype', 'zone'));
     }
@@ -103,7 +105,8 @@ class UsersController extends Controller
         //
 
         $user = User::find($id);
-        $usertype = Usertype::pluck('name', 'id');
+        // $usertype = Usertype::pluck('name', 'id');
+        $usertype = Usertype::where('id', '!=', 2)->pluck('name', 'id');
         $zone = Zone::pluck('name', 'id');
         return view('admin.users.edit', compact('user','usertype','zone'));
     }

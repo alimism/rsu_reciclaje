@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\APIS_APP\AuthController;
+use App\Http\Controllers\APIS_APP\UserController;
 use App\Http\Controllers\APIS_APP\ZonesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,14 +28,13 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');//proteger ruta logout
 
 /*Zonas*/
-
 // Route::get('listzones', [ZonesController::class, 'listZones']);
 Route::get('listzones', [ZonesController::class, 'listZones'])->middleware('api.key'); // Zonas protegidas
+Route::post('coordzonesuser', [ZonesController::class, 'coordZoneUser'])->middleware('auth:sanctum');//proteger ruta coordenadas zona
+Route::post('routezonesuser', [ZonesController::class, 'routeZoneUser'])->middleware('auth:sanctum');//proteger ruta rutas de zona
 
 
-Route::post('coordzonesuser', [ZonesController::class, 'coordZoneUser'])->middleware('auth:sanctum');//proteger ruta logout
-
-Route::post('routezonesuser', [ZonesController::class, 'routeZoneUser'])->middleware('auth:sanctum');//proteger ruta logout
-
-
+/*Usuario*/
+Route::post('updateProfile', [UserController::class, 'updateProfile'])->middleware('auth:sanctum');//proteger ruta udpateprofile
+Route::post('deleteUser', [UserController::class, 'deleteUser'])->middleware('auth:sanctum');//proteger ruta udpateprofile
 
