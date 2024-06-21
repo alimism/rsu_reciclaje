@@ -40,48 +40,58 @@ class VehicleroutesController extends Controller
      */
     public function store(Request $request)
     {
+        try {
+            $validatedData = $request->validate([
+                'date_start' => 'required|date',
+                'date_end' => 'required|date|after_or_equal:date_start',
+                'time_route' => 'required|date_format:H:i',  // Cambiado de 'h:i A' a 'H:i'
+                'routestatus_id' => 'required|integer',
+                'route_id' => 'required|integer',
+                'vehicle_id' => 'required|integer',
+                'description' => 'nullable|string',
+            ]);
 
+            $startDate = Carbon::parse($request->date_start);
+            $endDate = Carbon::parse($request->date_end);
+            $excludeWeekends = $request->has('exclude_weekends');
+            $intervalDays = $request->interval_days ?? 1;
+            $timeRoute = $request->time_route;  // Ya no necesitamos convertir el formato
 
-        $request->validate([
-            'date_start' => 'required|date',
-            'date_end' => 'required|date|after_or_equal:date_start',
-            'time_route' => 'required|date_format:h:i A',
-            'routestatus_id' => 'required|integer',
-            'route_id' => 'required|integer',
-            'vehicle_id' => 'required|integer',
-            'description' => 'nullable|string',
-        ]);
+            $createdRoutes = 0;
 
-        $startDate = Carbon::parse($request->date_start);
-        $endDate = Carbon::parse($request->date_end);
-        $excludeWeekends = $request->has('exclude_weekends');
-        $intervalDays = $request->interval_days ?? 1;
-        $timeRoute = Carbon::createFromFormat('h:i A', $request->time_route)->format('H:i');
-
-        for ($date = $startDate; $date->lte($endDate); $date->addDays($intervalDays)) {
-            if ($excludeWeekends && ($date->isWeekend())) {
-                continue;
+            for ($date = $startDate; $date->lte($endDate); $date->addDays($intervalDays)) {
+                if ($excludeWeekends && ($date->isWeekend())) {
+                    continue;
+                }
+                Vehicleroute::create([
+                    'date_route' => $date->format('Y-m-d'),
+                    'time_route' => $timeRoute,
+                    'routestatus_id' => $request->routestatus_id,
+                    'route_id' => $request->route_id,
+                    'vehicle_id' => $request->vehicle_id,
+                    'description' => $request->description,
+                ]);
+                $createdRoutes++;
             }
 
-            Vehicleroute::create([
-                'date_route' => $date->format('Y-m-d'),
-                'time_route' => $timeRoute,
-                'routestatus_id' => $request->routestatus_id,
-                'route_id' => $request->route_id,
-                'vehicle_id' => $request->vehicle_id,
-                'description' => $request->description,
-            ]);
+            if ($createdRoutes == 0) {
+                throw new \Exception('No se crearon rutas. Por favor, revise los parámetros de fecha y exclusión de fines de semana.');
+            }
+
+            return redirect()->route('admin.vehicleroutes.index')->with('success', 'Programación creada con éxito.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->errors();
+            $errorMessages = [];
+            foreach ($errors as $field => $messages) {
+                foreach ($messages as $message) {
+                    $errorMessages[] = $message;
+                }
+            }
+            return redirect()->back()->withErrors($errors)->withInput()->with('validationErrors', $errorMessages);
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Error al crear la programación: ' . $e->getMessage());
         }
-
-        dd($request->all()); // Añadir esta línea para depuración
-
-
-        return redirect()->route('admin.vehicleroutes.index')->with('success', 'Programación creada con éxito.');
     }
-
-
-
-
 
     /**
      * Display the specified resource.

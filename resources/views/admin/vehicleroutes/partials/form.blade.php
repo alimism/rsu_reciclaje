@@ -54,7 +54,6 @@
     {!! Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => 'Ingrese una descripción']) !!}
 </div>
 
-
 <script type="text/javascript">
     $(function() {
         moment.locale('es');
@@ -120,7 +119,7 @@
         });
 
         $('#timepicker').datetimepicker({
-            format: 'LT',
+            format: 'HH:mm',
             locale: 'es',
             icons: {
                 time: 'fa fa-clock',

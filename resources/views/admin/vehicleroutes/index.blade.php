@@ -4,7 +4,6 @@
 
 @section('plugins.DateRangePicker', true)
 @section('plugins.TempusDominusBs4', true)
-@section('plugins.Datatables', true)
 
 @section('content')
     <div class="p-2"></div>
@@ -236,6 +235,17 @@
             Swal.fire({
                 title: "Error de Proceso",
                 text: "{{ session('error') }}",
+                icon: "error"
+            });
+        </script>
+    @endif
+    @if (session('validationErrors'))
+        <script>
+            let errorMessages = @json(session('validationErrors'));
+            let formattedErrors = errorMessages.join('<br>');
+            Swal.fire({
+                title: "Error de Validación",
+                html: formattedErrors,
                 icon: "error"
             });
         </script>
