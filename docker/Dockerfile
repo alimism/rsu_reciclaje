@@ -38,7 +38,7 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www
 
 # Instalar dependencias de Composer
-RUN composer install --no-dev --optimize-autoloader
+# RUN composer install --no-dev --optimize-autoloader
 
 # Exponer el puerto 9000 y ejecutar PHP-FPM
 EXPOSE 9000
