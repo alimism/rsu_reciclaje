@@ -1,12 +1,8 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    image: laravel_app
+    image: alimism/rsu_reciclaje_app:v1.0
     container_name: laravel_app
     restart: unless-stopped
     working_dir: /var/www
@@ -16,7 +12,7 @@ services:
       - app-network
 
   webserver:
-    image: nginx:alpine
+    image: alimism/rsu_reciclaje_nginx:v1.0
     container_name: nginx_webserver
     restart: unless-stopped
     ports:
@@ -29,7 +25,7 @@ services:
       - app-network
 
   mysql:
-    image: mysql:5.7
+    image: alimism/rsu_reciclaje_mysql:v1.0
     container_name: mysql
     restart: unless-stopped
     environment:
