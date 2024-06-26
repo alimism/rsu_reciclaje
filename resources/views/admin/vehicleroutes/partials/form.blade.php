@@ -18,7 +18,7 @@
     {!! Form::label('time_route', 'Hora de la Ruta') !!}
     <div class="input-group date" id="timepicker" data-target-input="nearest">
         <input type="text" name="time_route" class="form-control datetimepicker-input" data-target="#timepicker"
-            required />
+            value="{{ old('time_route', isset($vehicleroute) ? $vehicleroute->time_route : '') }}" required />
         <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
             <div class="input-group-text"><i class="fa fa-clock"></i></div>
         </div>
@@ -133,5 +133,10 @@
                 close: 'fa fa-times'
             }
         });
+
+        @if (isset($vehicleroute))
+            $('#timepicker').datetimepicker('date', moment('{{ $vehicleroute->time_route }}', 'HH:mm'));
+        @endif
+        
     });
 </script>
