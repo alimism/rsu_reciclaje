@@ -104,8 +104,10 @@ class VehiclesController extends Controller
         // Obtiene la capacidad del vehículo
         $capacity = $vehicle->capacity;
 
+        $primaryColor = $vehicle->color->name;
+
         // Retorna la vista 'admin.vehicles.show' con los datos del vehículo, conductores, recolectores y capacidad
-        return view('admin.vehicles.show', compact('vehicle', 'conductores', 'recolectores', 'capacity'));
+        return view('admin.vehicles.show', compact('vehicle', 'conductores', 'recolectores', 'capacity', 'primaryColor'));
     }
 
     public function assignOccupants(Request $request, $id)
@@ -194,26 +196,49 @@ class VehiclesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
-        $vehicle = Vehicle::find($id);
+        $vehicle = Vehicle::findOrFail($id);
 
-        // $vehicle = Vehicle::create();
+        $request->validate([
+            'name' => 'required|unique:vehicles,name,' . $vehicle->id,
+            'plate' => 'required|unique:vehicles,plate,' . $vehicle->id,
+            'code' => 'required|unique:vehicles,code,' . $vehicle->id,
+        ]);
 
-        $vehicle->update($$request->except('image'));
+        $status = 0;
+
+        if (isset($request->status)) {
+            $status = 1;
+        }
+
+        $vehicle->update($request->except('image') + ['status' => $status]);
 
         if ($request->hasFile('image')) {
             if ($request->file('image')->isValid()) {
                 try {
+                    $image = $request->file('image')->store('public/vehicles_images');
+                    $urlImage = Storage::url($image);
+                    // Si ya tiene una imagen, elimina la anterior
+                    if ($vehicle->vehicleImage) {
+                        Storage::delete(str_replace('/storage', 'public', $vehicle->vehicleImage->first()->image));
+                        $vehicle->vehicleImage->first()->update(['image' => $urlImage]);
+                    } else {
+                        Vehicleimage::create([
+                            'image' => $urlImage, 'profile' => '1', 'vehicle_id' => $vehicle->id
+                        ]);
+                    }
                 } catch (\Exception $e) {
                     return redirect()->back()->with('error', 'File no pudo ser guardado: ' . $e->getMessage());
                 }
+            } else {
+                return redirect()->back()->with('error', 'La imagen no es válida.');
             }
         }
 
         return redirect()->route('admin.vehicles.index')->with('success', 'Vehiculo actualizado');
     }
+
 
     /**
      * Remove the specified resource from storage.

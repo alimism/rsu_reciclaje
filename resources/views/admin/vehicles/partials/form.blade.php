@@ -1,40 +1,38 @@
 <div class="form-row">
-
     <div class="form-group col-6">
         {!! Form::label('name', 'Nombre') !!}
-        {!! Form::text('name', null, [
+        {!! Form::text('name', isset($vehicle) ? $vehicle->name : null, [
             'class' => 'form-control',
             'placeholder' => 'Ingrese el nombre de la unidad',
             'required',
         ]) !!}
-
     </div>
 
     <div class="form-group col-6">
         {!! Form::label('code', 'Codigo') !!}
-        {!! Form::text('code', null, ['class' => 'form-control', 'placeholder' => 'Ingrese el codigo de la unidad']) !!}
-
+        {!! Form::text('code', isset($vehicle) ? $vehicle->code : null, [
+            'class' => 'form-control',
+            'placeholder' => 'Ingrese el codigo de la unidad',
+        ]) !!}
     </div>
-
 </div>
 
 <div class="form-row">
-
     <div class="form-group col-6">
         {!! Form::label('plate', 'Placa') !!}
-        {!! Form::text('plate', null, [
+        {!! Form::text('plate', isset($vehicle) ? $vehicle->plate : null, [
             'class' => 'form-control',
             'placeholder' => 'Ingrese la placa de la unidad',
         ]) !!}
-
     </div>
 
     <div class="form-group col-6">
         {!! Form::label('year', 'Año') !!}
-        {!! Form::text('year', null, ['class' => 'form-control', 'placeholder' => 'Ingrese el año de la unidad']) !!}
-
+        {!! Form::text('year', isset($vehicle) ? $vehicle->year : null, [
+            'class' => 'form-control',
+            'placeholder' => 'Ingrese el año de la unidad',
+        ]) !!}
     </div>
-
 </div>
 
 <div class="form-row">
@@ -55,7 +53,6 @@
     </div>
 </div>
 
-
 <div class="form-row">
     <div class="form-group col-6">
         {!! Form::label('type_id', 'Tipo') !!}
@@ -68,26 +65,30 @@
 
     <div class="form-group col-6">
         {!! Form::label('color_id', 'Color') !!}
-        {!! Form::select('color_id', $colors, isset($vehicle) ? $vehicle->color_id : null, [
-            'class' => 'form-control',
-            'required',
-            'id' => 'model_id',
-        ]) !!}
+        <select name="color_id" id="color_id" class="form-control select2" required>
+            @foreach($colors as $id => $color)
+                <option value="{{ $id }}" data-color="{{ $color }}" {{ isset($vehicle) && $vehicle->color_id == $id ? 'selected' : '' }}>
+                    {{ $color }}
+                </option>
+            @endforeach
+        </select>
     </div>
 </div>
 
 <div class="form-row">
     <div class="form-group col-12">
         {!! Form::label('description', 'Descripcion') !!}
-        {!! Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => 'Ingrese una descripcion']) !!}
-
+        {!! Form::textarea('description', isset($vehicle) ? $vehicle->description : null, [
+            'class' => 'form-control',
+            'placeholder' => 'Ingrese una descripcion',
+        ]) !!}
     </div>
 </div>
 
 <div class="form-row">
     <div class="form-group col-6">
         {!! Form::label('capacity', 'Capacidad') !!}
-        {!! Form::number('capacity', null, [
+        {!! Form::number('capacity', isset($vehicle) ? $vehicle->capacity : null, [
             'class' => 'form-control',
             'placeholder' => 'Ingrese la capacidad de la unidad',
         ]) !!}
@@ -95,41 +96,50 @@
 
     <div class="form-group col-6">
         {!! Form::label('status', 'Activo') !!}
-        {!! Form::checkbox('status', 1, null) !!}
-
+        {!! Form::checkbox('status', 1, isset($vehicle) ? $vehicle->status : null) !!}
     </div>
-
-
 </div>
 
 <div class="form-group">
-    <label form="formFile" class="form-label">Selecciona una imagen</label>
-    <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
+    <label for="formFile" class="form-label">Selecciona una imagen</label>
+    <input type="file" name="image" id="image" class="form-control" accept="image/*">
 </div>
 
-
 <script>
-    $('#brand_id').change(function() {
+    $(document).ready(function() {
+        $('#brand_id').change(function() {
             var id = $(this).val();
-            // alert(id);
             $.ajax({
                 url: "{{ route('admin.modelsbybrand', '_id') }}".replace("_id", id),
                 type: "GET",
                 datatype: "JSON",
                 contenttype: "application/json",
                 success: function(response) {
+                    $('#model_id').empty();
                     $.each(response, function(key, value) {
-                        $('#model_id').empty();
-                        $('#model_id').append('<option value=' + value.id + '>' + value.name +
-                            '</option>')
-
-                    })
+                        $('#model_id').append('<option value=' + value.id + '>' + value.name + '</option>');
+                    });
                 },
                 error: function(error) {
                     console.error('Error:', error);
                 }
             });
+        });
+
+        function formatColorOption(color) {
+            if (!color.id) {
+                return color.text;
+            }
+            var colorValue = $(color.element).text().trim(); // Obtener el valor del texto que contiene el color hex
+            var $colorOption = $('<span><i class="fa fa-square" style="color:' + colorValue + '; margin-right: 5px;"></i>' + colorValue + '</span>');
+            return $colorOption;
         }
 
-    )
+        $('#color_id').select2({
+            theme: 'bootstrap-5', // Asegura que Select2 use el tema de Bootstrap
+            templateResult: formatColorOption,
+            templateSelection: formatColorOption,
+            width: 'resolve' // Ajusta el ancho para que coincida con otros selects
+        });
+    });
 </script>
