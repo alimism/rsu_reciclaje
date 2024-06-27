@@ -3,22 +3,17 @@
 @section('title', 'Asignación de Coordenadas')
 
 @section('content')
-
-    <a href="{{ route('admin.zones.index') }}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i>
-        Regresar</a>
-    <div class="p-2"> </div>
+    <a href="{{ route('admin.zones.index') }}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Regresar</a>
+    <div class="p-2"></div>
     <div class="card">
         <div class="card-header">Perimetro de la Zona
-            <a id="btnNuevo" class="btn btn-success float-right"><i class="fas fa-plus"></i>
-                Agregar coordenada</a>
+            <a id="btnNuevo" class="btn btn-success float-right"><i class="fas fa-plus"></i> Agregar coordenada</a>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-4 d-flex flex-column">
                     <div class="card flex-fill">
-                        <div class="card-header">
-                            Datos de la Zona
-                        </div>
+                        <div class="card-header">Datos de la Zona</div>
                         <div class="card-body">
                             <label for="">Zona:</label>
                             {{ $zone->name }}<br>
@@ -31,9 +26,7 @@
                 </div>
                 <div class="col-8">
                     <div class="card">
-                        <div class="card-header">
-                            Listado de Coordenadas
-                        </div>
+                        <div class="card-header">Listado de Coordenadas</div>
                         <div class="card-body">
                             <table class="table table-striped">
                                 <thead>
@@ -43,11 +36,9 @@
                                         <th>LONGITUD</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
                                     @foreach ($zonecoords as $zonecoord)
                                         <tr>
-
                                             <td>{{ $zonecoord->id }}</td>
                                             <td>{{ $zonecoord->latitude }}</td>
                                             <td>{{ $zonecoord->longitude }}</td>
@@ -63,8 +54,6 @@
                 <div id="mapShow" style="height: 400px; width: 100%;"></div>
             </div>
         </div>
-
-
     </div>
 
     <!-- Modal -->
@@ -81,10 +70,6 @@
                 <div class="modal-body">
                     ...
                 </div>
-                {{-- <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div> --}}
             </div>
         </div>
     </div>
@@ -92,6 +77,8 @@
 
 @section('js')
     <script>
+        var mapInitialized = false;
+
         $(document).ready(function() {
             $('#datatable').DataTable({
                 "language": {
@@ -102,8 +89,7 @@
             $('#btnNuevo').click(function() {
                 var id = {{ $zone->id }};
                 $.ajax({
-                    url: "{{ route('admin.zonecoords.edit', ['zonecoord' => '__id__']) }}".replace(
-                        '__id__', id),
+                    url: "{{ route('admin.zonecoords.edit', ['zonecoord' => '__id__']) }}".replace('__id__', id),
                     type: "GET",
                     success: function(response) {
                         $('#exampleModal .modal-body').html(response);
@@ -111,6 +97,20 @@
                     }
                 });
             });
+
+            $('#exampleModal').on('shown.bs.modal', function () {
+                if (!mapInitialized) {
+                    initMapModal();
+                    mapInitialized = true;
+                }
+            });
+
+            $('#exampleModal').on('hidden.bs.modal', function () {
+                $('#mapShow').html('');
+                initMap();
+            });
+
+            initMap();
         });
 
         function initMap() {
@@ -118,12 +118,14 @@
                 return ['lat' => $coord->latitude, 'lng' => $coord->longitude];
             }) !!};
 
+            if (perimeterCoords.length === 0) {
+                $('#mapShow').text('No hay coordenadas definidas.');
+                return;
+            }
+
             function displayMap(lat, lng, perimeterCoords) {
                 var mapOptions = {
-                    center: {
-                        lat: lat,
-                        lng: lng
-                    },
+                    center: { lat: lat, lng: lng },
                     zoom: 18
                 };
 
@@ -148,7 +150,6 @@
 
                     map.fitBounds(bounds);
 
-                    // Opcional: Ajusta el zoom después de centrar el mapa
                     google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
                         this.setZoom(16); // Ajusta el nivel de zoom aquí
                     });
@@ -158,31 +159,16 @@
                 }
             }
 
-            if (perimeterCoords.length > 0) {
-                displayMap(perimeterCoords[0].lat, perimeterCoords[0].lng, perimeterCoords);
-            } else {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var currentLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    displayMap(currentLocation.lat, currentLocation.lng, []);
-                }, function() {
-                    console.error('Error al obtener la ubicación actual');
-                    var defaultLocation = {
-                        lat: -34.397,
-                        lng: 150.644
-                    }; // Coordenadas por defecto
-                    displayMap(defaultLocation.lat, defaultLocation.lng, []);
-                    alert('No se pudo obtener la ubicación actual y no hay coordenadas de perímetro disponibles.');
-                });
-            }
+            displayMap(perimeterCoords[0].lat, perimeterCoords[0].lng, perimeterCoords);
         }
 
-        window.initMap = initMap; // Definimos initMap globalmente
+        function initMapModal() {
+            // Inicializa el mapa en el modal de la misma manera
+        }
+
+        window.initMap = initMap;
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initMap" async defer>
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initMap" async defer></script>
 
     @if (session('success'))
         <script>

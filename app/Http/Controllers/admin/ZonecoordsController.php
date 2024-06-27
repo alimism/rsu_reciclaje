@@ -14,7 +14,6 @@ class ZonecoordsController extends Controller
      */
     public function index()
     {
-        
     }
 
     /**
@@ -32,9 +31,26 @@ class ZonecoordsController extends Controller
      */
     public function store(Request $request)
     {
-        Zonecoord::create($request->all());
-        return redirect()->route('admin.zones.show', $request->zone_id)->with('success', 'Coordenada creado');
+        $zoneId = $request->input('zone_id');
+        $latitudes = $request->input('latitude');
+        $longitudes = $request->input('longitude');
+    
+        if (!empty($latitudes) && !empty($longitudes)) {
+            Zonecoord::where('zone_id', $zoneId)->delete(); // Eliminar coordenadas existentes
+    
+            for ($i = 0; $i < count($latitudes); $i++) {
+                Zonecoord::create([
+                    'zone_id' => $zoneId,
+                    'latitude' => $latitudes[$i],
+                    'longitude' => $longitudes[$i],
+                ]);
+            }
+        }
+    
+        return redirect()->route('admin.zones.show', $zoneId)->with('success', 'Coordenadas actualizadas');
     }
+    
+
 
     /**
      * Display the specified resource.
@@ -54,7 +70,7 @@ class ZonecoordsController extends Controller
         $zone = Zone::with(['coords' => function ($query) {
             $query->latest()->select('id', 'zone_id', 'latitude', 'longitude');
         }])->findOrFail($id);
-    
+
         return view('admin.zonecoords.create', compact('zone'));
     }
 
