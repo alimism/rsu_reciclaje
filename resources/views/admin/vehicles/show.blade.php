@@ -85,6 +85,33 @@
                 }
             });
 
+
+            // Función para calcular un color secundario (más oscuro)
+            function calculateSecondaryColor(hex) {
+                let r = parseInt(hex.slice(1, 3), 16);
+                let g = parseInt(hex.slice(3, 5), 16);
+                let b = parseInt(hex.slice(5, 7), 16);
+                // Hacer el color más oscuro reduciendo la intensidad
+                r = Math.max(0, r - 50);
+                g = Math.max(0, g - 50);
+                b = Math.max(0, b - 50);
+                return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16)
+                    .padStart(2, '0');
+            }
+
+            // Asignar colores al SVG
+            function assignColorsToSVG(primaryColor, secondaryColor) {
+                $('.primary-fill-color').attr('fill', primaryColor);
+                $('.secondary-fill-color').attr('fill', secondaryColor);
+            }
+
+            // Obtener el color primario desde el controlador
+            var primaryColor = '{{ $primaryColor }}';
+            var secondaryColor = calculateSecondaryColor(primaryColor);
+
+            // Asignar los colores al SVG
+            assignColorsToSVG(primaryColor, secondaryColor);
+
             // Colores para los asientos de los recolectores
             var seatColors = ['lightblue', 'lightcoral', 'lightgreen', 'lightpink'];
 

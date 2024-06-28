@@ -343,6 +343,11 @@ return [
                     'url' => '/admin/vehicletypes',
                     'icon' => 'fas fa-fw fa-list'
                 ],
+                [
+                    'text' => 'Colores',
+                    'url' => '/admin/vehiclecolors',
+                    'icon' => 'fas fa-fw fa-palette'
+                ],
             ],
         ],
         [
@@ -439,41 +444,6 @@ return [
                 ],
             ],
         ],
-        'DataTables-SearchPanes' => [
-            'active' => true,
-            'files' => [
-                [
-                    'type' => 'js',
-                    'asset' => true,
-                    'location' => '//cdn.datatables.net/searchpanes/1.4.0/js/dataTables.searchPanes.min.js',
-                ],
-                [
-                    'type' => 'js',
-                    'asset' => true,
-                    'location' => '//cdn.datatables.net/searchpanes/1.4.0/js/searchPanes.bootstrap4.min.js',
-                ],
-                [
-                    'type' => 'css',
-                    'asset' => true,
-                    'location' => '//cdn.datatables.net/searchpanes/1.4.0/css/searchPanes.bootstrap4.min.css',
-                ],
-            ],
-        ],
-        'DataTables-Select' => [
-            'active' => true,
-            'files' => [
-                [
-                    'type' => 'js',
-                    'asset' => true,
-                    'location' => '//cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js',
-                ],
-                [
-                    'type' => 'css',
-                    'asset' => true,
-                    'location' => '//cdn.datatables.net/select/1.3.3/css/select.bootstrap4.min.css',
-                ],
-            ],
-        ],
         'Select2' => [
             'active' => true,
             'files' => [
@@ -561,6 +531,21 @@ return [
                     'type' => 'css',
                     'asset' => true,
                     'location' => 'vendor/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css',
+                ],
+            ],
+        ],
+        'bootstrapColorpicker' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => 'vendor/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'vendor/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css',
                 ],
             ],
         ],
