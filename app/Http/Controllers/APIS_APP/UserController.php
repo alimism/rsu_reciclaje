@@ -19,12 +19,12 @@ class UserController extends Controller
 
 
             $validator = Validator::make($request->all(), [
-                'name' => 'nullable|string|max:255', // Campo opcional, puede ser null o string de máximo 255 caracteres
-                'lastname' => 'nullable|string|max:255', // Campo opcional, puede ser null o string de máximo 255 caracteres
-                'dni' => 'nullable|string|max:20', // Campo opcional, puede ser null o string de máximo 20 caracteres
-                'birthdate' => 'nullable|date', // Campo opcional, puede ser null o una fecha válida
-                'address' => 'nullable|string|max:255', // Campo opcional, puede ser null o string de máximo 255 caracteres
-                'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id, // Campo opcional, puede ser null o un email válido y único
+                'name' => 'nullable|string|max:255',
+                'lastname' => 'nullable|string|max:255',
+                'dni' => 'nullable|string|max:20',
+                'birthdate' => 'nullable',
+                'address' => 'nullable|string|max:255',
+                'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
             ]);
 
 
@@ -58,7 +58,7 @@ class UserController extends Controller
                 'message' => 'Datos actualizados correctamente!',
             ], 200);
         } catch (\Exception $e) {
-            // Manejar cualquier excepción que ocurra durante el proceso de registro
+
             return response()->json([
                 'status' => 'error',
                 'code' => 500,
@@ -98,7 +98,7 @@ class UserController extends Controller
                 'message' => 'Usuario eliminado exitosamente',
             ], 200);
         } catch (\Exception $e) {
-            // Manejar cualquier excepción que ocurra durante el proceso de eliminación
+
             return response()->json([
                 'status' => 'error',
                 'code' => 500,
