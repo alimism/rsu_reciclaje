@@ -53,15 +53,16 @@
                         <tr>
                             <td>{{ $vehicle->id }}</td>
                             {{-- <td>{{ $vehicle->vehicleImage->first()->image }}</td> --}}
-                            <td><img src="{{ asset($vehicle->vehicleImage->first()->image ?: 'storage/vehicles_images/default_vehicle.png') }}"
-                                    width="100"></td>
+                            <td><img src="{{ asset($vehicle->vehicleImage->first()->image ?? 'storage/vehicles_images/default_vehicle.png') }}"
+                                    alt="Imagen del vehículo" width="80"></td>
                             <td>{{ $vehicle->name }}</td>
                             <td>{{ $vehicle->brand->name }}</td>
                             <td>{{ $vehicle->model->name }}</td>
                             <td>{{ $vehicle->type->name }}</td>
                             <td>{{ $vehicle->plate }}</td>
                             <td>
-                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.vehicles.show', $vehicle->id) }}"><i
+                                <a class="btn btn-secondary btn-sm"
+                                    href="{{ route('admin.vehicles.show', $vehicle->id) }}"><i
                                         class="fas fa-user-plus"></i></a>
                             </td>
                             <td>
@@ -76,7 +77,8 @@
                                     class="frmEliminar">
                                     @csrf
                                     @method('put')
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-danger btn-sm"><i
+                                            class="fas fa-trash"></i></button>
                                 </form>
                             </td>
 
