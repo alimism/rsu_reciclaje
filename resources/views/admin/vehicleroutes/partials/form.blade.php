@@ -1,13 +1,26 @@
 <div class="form-group">
-    {!! Form::label('date_range', 'Rango de Fechas') !!}
-    <div id="reportrange"
-        style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-        <i class="fa fa-calendar"></i>&nbsp;
-        <span></span> <i class="fa fa-caret-down"></i>
-    </div>
-    <input type="hidden" name="date_start" id="date_start">
-    <input type="hidden" name="date_end" id="date_end">
+    @if (isset($vehicleroute))
+        {!! Form::label('date_route', 'Fecha de la Ruta') !!}
+        <div id="reportrange"
+            style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <i class="fa fa-calendar"></i>&nbsp;
+            <span></span> <i class="fa fa-caret-down"></i>
+        </div>
+        <input type="hidden" name="date_route" id="date_start"
+            value="{{ old('date_route', isset($vehicleroute) ? $vehicleroute->date_route : '') }}">
+    @else
+        {!! Form::label('date_range', 'Rango de Fechas') !!}
+        <div id="reportrange"
+            style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <i class="fa fa-calendar"></i>&nbsp;
+            <span></span> <i class="fa fa-caret-down"></i>
+        </div>
+        <input type="hidden" name="date_start" id="date_start" value="{{ old('date_start') }}">
+        <input type="hidden" name="date_end" id="date_end" value="{{ old('date_end') }}">
+    @endif
 </div>
+
+
 
 <div class="form-group">
     <input type="checkbox" id="exclude_weekends" name="exclude_weekends">
@@ -58,11 +71,20 @@
     $(function() {
         moment.locale('es');
 
-        var start = moment();
-        var end = moment().add(29, 'days');
+        @if (isset($vehicleroute))
+            var singleDate = true;
+            var start = moment("{{ $vehicleroute->date_route }}");
+            var end = moment("{{ $vehicleroute->date_route }}");
+            $('#reportrange span').html(start.format('MMMM D, YYYY'));
+        @else
+            var singleDate = false;
+            var start = moment();
+            var end = moment().add(29, 'days');
+        @endif
 
         function cb(start, end) {
-            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + (singleDate ? '' : ' - ' + end.format(
+                'MMMM D, YYYY')));
             $('#date_start').val(start.format('YYYY-MM-DD'));
             $('#date_end').val(end.format('YYYY-MM-DD'));
         }
@@ -70,7 +92,8 @@
         $('#reportrange').daterangepicker({
             startDate: start,
             endDate: end,
-            ranges: {
+            singleDatePicker: singleDate,
+            ranges: singleDate ? {} : {
                 'Hoy': [moment(), moment()],
                 'Próximos 7 días': [moment(), moment().add(6, 'days')],
                 'Próximos 30 días': [moment(), moment().add(29, 'days')],
@@ -137,6 +160,5 @@
         @if (isset($vehicleroute))
             $('#timepicker').datetimepicker('date', moment('{{ $vehicleroute->time_route }}', 'HH:mm'));
         @endif
-        
     });
 </script>

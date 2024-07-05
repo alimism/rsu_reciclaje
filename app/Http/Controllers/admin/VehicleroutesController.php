@@ -118,19 +118,32 @@ class VehicleroutesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'date_route' => 'required|date',
-            'time_route' => 'required',
-            'routestatus_id' => 'required|integer',
-            'route_id' => 'required|integer',
-            'vehicle_id' => 'required|integer',
-            'description' => 'nullable|string'
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'date_route' => 'required|date',
+                'time_route' => 'required|date_format:H:i',
+                'routestatus_id' => 'required|integer',
+                'route_id' => 'required|integer',
+                'vehicle_id' => 'required|integer',
+                'description' => 'nullable|string'
+            ]);
 
-        $vehicleroute = VehicleRoute::findOrFail($id);
-        $vehicleroute->update($request->all());
+            $vehicleroute = VehicleRoute::findOrFail($id);
+            $vehicleroute->update($validatedData);
 
-        return redirect()->route('admin.vehicleroutes.index')->with('success', 'Ruta del vehículo actualizada con éxito.');
+            return redirect()->route('admin.vehicleroutes.index')->with('success', 'Ruta del vehículo actualizada con éxito.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->errors();
+            $errorMessages = [];
+            foreach ($errors as $field => $messages) {
+                foreach ($messages as $message) {
+                    $errorMessages[] = $message;
+                }
+            }
+            return redirect()->back()->withErrors($errors)->withInput()->with('validationErrors', $errorMessages);
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Error al actualizar la ruta del vehículo: ' . $e->getMessage());
+        }
     }
 
 
