@@ -12,17 +12,57 @@ use Carbon\Carbon;
 
 class VehicleroutesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $vehicleroutes = VehicleRoute::all();
-        $minDate = $vehicleroutes->min('date_route');
-        $maxDate = $vehicleroutes->max('date_route');
 
-        return view('admin.vehicleroutes.index', compact('vehicleroutes', 'minDate', 'maxDate'));
+    public function index(Request $request)
+    {
+        $minDate = VehicleRoute::min('date_route');
+        $maxDate = VehicleRoute::max('date_route');
+
+        return view('admin.vehicleroutes.index', compact('minDate', 'maxDate'));
     }
+
+    public function filter(Request $request)
+    {
+        $query = VehicleRoute::with(['routeStatus', 'vehicle', 'route']);
+
+        if ($request->filled('date_start') && $request->filled('date_end')) {
+            $query->whereBetween('date_route', [$request->date_start, $request->date_end]);
+        }
+
+        if ($request->filled('time_route')) {
+            try {
+                $time = Carbon::createFromFormat('H:i:s', $request->time_route)->format('H:i:s');
+                $query->whereTime('time_route', $time);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Invalid time format'], 400);
+            }
+        }
+
+        if ($request->filled('vehicle')) {
+            $query->where('vehicle_id', $request->vehicle);
+        }
+
+        if ($request->filled('route')) {
+            $query->where('route_id', $request->route);
+        }
+
+        $vehicleroutes = $query->get();
+
+        return response()->json($vehicleroutes);
+    }
+
+    public function storeFilters(Request $request)
+    {
+        session([
+            'date_range' => $request->input('date_range'),
+            'time_picker' => $request->input('time_picker'),
+            'vehicle_filter' => $request->input('vehicle_filter'),
+            'route_filter' => $request->input('route_filter')
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -143,18 +183,10 @@ class VehicleroutesController extends Controller
                 'vehicle_id' => 'required|integer',
                 'description' => 'nullable|string'
             ]);
-    
+
             $vehicleroute = VehicleRoute::findOrFail($id);
             $vehicleroute->update($validatedData);
-    
-            // Guardar filtros en la sesión
-            session([
-                'date_range' => $request->input('date_range'),
-                'time_picker' => $request->input('time_picker'),
-                'vehicle_filter' => $request->input('vehicle_filter'),
-                'route_filter' => $request->input('route_filter')
-            ]);
-    
+
             return redirect()->route('admin.vehicleroutes.index')->with('success', 'Ruta del vehículo actualizada con éxito.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             $errors = $e->errors();
@@ -169,7 +201,7 @@ class VehicleroutesController extends Controller
             return redirect()->back()->withInput()->with('error', 'Error al actualizar la ruta del vehículo: ' . $e->getMessage());
         }
     }
-    
+
 
 
     /**

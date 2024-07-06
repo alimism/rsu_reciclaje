@@ -19,7 +19,8 @@
                 </div>
                 <div class="col-md-6">
                     <div class="input-group date" id="timePicker" data-target-input="nearest">
-                        <input type="text" class="form-control datetimepicker-input" data-target="#timePicker" placeholder="Seleccione hora"/>
+                        <input type="text" class="form-control datetimepicker-input" data-target="#timePicker"
+                            placeholder="Seleccione hora" />
                         <div class="input-group-append" data-target="#timePicker" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-clock"></i></div>
                         </div>
@@ -27,17 +28,17 @@
                 </div>
                 <div class="col-md-6">
                     <select id="vehicleFilter" class="form-control">
-                        <option value="">Todos los vehículos</option>
-                        @foreach ($vehicleroutes->pluck('vehicle.name')->unique() as $vehicle)
-                            <option value="{{ $vehicle }}">{{ $vehicle }}</option>
+                        <option selected value>Selecciona un vehiculo</option>
+                        @foreach (App\Models\Vehicle::pluck('name', 'id') as $id => $vehicle)
+                            <option value="{{ $id }}">{{ $vehicle }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-md-6">
                     <select id="routeFilter" class="form-control">
-                        <option value="">Todas las rutas</option>
-                        @foreach ($vehicleroutes->pluck('route.name')->unique() as $route)
-                            <option value="{{ $route }}">{{ $route }}</option>
+                        <option selected value>Selecciona una ruta</option>
+                        @foreach (App\Models\Route::pluck('name', 'id') as $id => $route)
+                            <option value="{{ $id }}">{{ $route }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -56,28 +57,7 @@
                         <th width="10"></th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach ($vehicleroutes as $vehicleroute)
-                        <tr>
-                            <td>{{ $vehicleroute->id }}</td>
-                            <td>{{ $vehicleroute->date_route }}</td>
-                            <td>{{ $vehicleroute->time_route }}</td>
-                            <td>{{ $vehicleroute->routeStatus->name }}</td>
-                            <td>{{ $vehicleroute->vehicle->name }}</td>
-                            <td>{{ $vehicleroute->route->name }}</td>
-                            <td>{{ $vehicleroute->description }}</td>
-                            <td><a class="btn btn-primary btnEditar btn-sm" data-id="{{ $vehicleroute->id }}"><i class="fas fa-edit"></i></a>
-                            </td>
-                            <td>
-                                <form action="{{ route('admin.vehicleroutes.destroy', $vehicleroute->id) }}" method="post"
-                                    class="frmEliminar">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
+                <tbody id="tableBody">
                 </tbody>
             </table>
         </div>
@@ -113,26 +93,12 @@
             $('#dateRange').daterangepicker({
                 locale: {
                     format: 'YYYY-MM-DD',
-                    cancelLabel: 'Clear'
+                    cancelLabel: 'Limpiar'
                 },
                 startDate: minDate,
                 endDate: maxDate,
                 opens: 'left',
-                autoUpdateInput: false
-            });
-
-            // Guardar filtros en el almacenamiento local
-            $('#dateRange').on('apply.daterangepicker', function(ev, picker) {
-                var dateRange = picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD');
-                localStorage.setItem('date_range', dateRange);
-                $(this).val(dateRange);
-                updateTableAndFilters();
-            });
-
-            $('#dateRange').on('cancel.daterangepicker', function(ev, picker) {
-                localStorage.removeItem('date_range');
-                $(this).val('');
-                updateTableAndFilters();
+                autoUpdateInput: true
             });
 
             // Inicializar el TimePicker
@@ -152,81 +118,117 @@
                 }
             });
 
-            $('#timePicker').on('change.datetimepicker', function(ev) {
-                var time = $(this).find("input").val();
-                localStorage.setItem('time_picker', time);
-                updateTableAndFilters();
-            });
-
-            // Inicializar los valores desde el almacenamiento local
-            if (localStorage.getItem('date_range')) {
-                $('#dateRange').val(localStorage.getItem('date_range'));
-                var dateRange = localStorage.getItem('date_range').split(' - ');
+            // Inicializar los valores desde la sesión
+            if ("{{ session('date_range') }}") {
+                var dateRange = "{{ session('date_range') }}".split(' - ');
                 $('#dateRange').data('daterangepicker').setStartDate(dateRange[0]);
                 $('#dateRange').data('daterangepicker').setEndDate(dateRange[1]);
+                $('#dateRange').val("{{ session('date_range') }}");
             }
 
-            if (localStorage.getItem('time_picker')) {
-                var time = localStorage.getItem('time_picker');
-                $('#timePicker').find("input").val(time);
-                $('#timePicker').datetimepicker('date', moment(time, 'HH:mm'));
+            if ("{{ session('time_picker') }}") {
+                $('#timePicker').find("input").val("{{ session('time_picker') }}");
+                $('#timePicker').datetimepicker('date', moment("{{ session('time_picker') }}", 'HH:mm'));
             }
 
-            if (localStorage.getItem('vehicle_filter')) {
-                $('#vehicleFilter').val(localStorage.getItem('vehicle_filter'));
+            if ("{{ session('vehicle_filter') }}") {
+                $('#vehicleFilter').val("{{ session('vehicle_filter') }}");
             }
 
-            if (localStorage.getItem('route_filter')) {
-                $('#routeFilter').val(localStorage.getItem('route_filter'));
+            if ("{{ session('route_filter') }}") {
+                $('#routeFilter').val("{{ session('route_filter') }}");
             }
 
-            // Guardar filtros de select en el almacenamiento local
-            $('#vehicleFilter').on('change', function() {
-                localStorage.setItem('vehicle_filter', $(this).val());
-                updateTableAndFilters();
+            $('#dateRange').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                applyFilters();
             });
 
-            $('#routeFilter').on('change', function() {
-                localStorage.setItem('route_filter', $(this).val());
-                updateTableAndFilters();
+            // Limpiar el valor del input al cancelar la selección
+            $('#dateRange').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+                // applyFilters();
+                
+
             });
 
-            // Configuración de DataTables
-            var table = $('#datatable').DataTable({
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.13.5/i18n/es-MX.json"
-                },
-                paging: true,
-            });
-
-            // Función para actualizar la tabla y los filtros
-            function updateTableAndFilters() {
-                if (table) {
-                    table.draw();
+            $('#timePicker').on('change.datetimepicker', function(ev) {
+                const valorInput = $('#timePicker').find("input").val();
+                const isEmpty = valorInput === '' ? true : false;
+                if (!isEmpty) {
+                    applyFilters();
+                } else {
+                    $('#tableBody').empty();
                 }
-            }
+                // applyFilters();
+            });
 
-            // Filtro personalizado para rango de fechas y hora específica
-            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            $('#vehicleFilter, #routeFilter').on('change', function() {
+                applyFilters();
+            });
+
+            function applyFilters() {
                 var dateRange = $('#dateRange').val().split(' - ');
-                var min = dateRange[0] ? moment(dateRange[0], 'YYYY-MM-DD') : null;
-                var max = dateRange[1] ? moment(dateRange[1], 'YYYY-MM-DD') : null;
-                var date = moment(data[1], 'YYYY-MM-DD'); // Asume que la fecha está en la segunda columna
                 var time = $('#timePicker').find("input").val();
-                var recordTime = data[2].substring(0, 5) + ':00'; // Normalizar a HH:mm:00
-
-                if ((min === null && max === null) ||
-                    (min === null && date <= max) ||
-                    (min <= date && max === null) ||
-                    (min <= date && date <= max)) {
-                    if (time === "" || time + ':00' === recordTime) { // Comparar con segundos normalizados a 00
-                        return true;
-                    }
+                if (time !== '') {
+                    time = time + ':00'; // Normalizar los segundos a 00
                 }
-                return false;
-            });
+                var vehicle = $('#vehicleFilter').val();
+                var route = $('#routeFilter').val();
 
-            // Botones y funcionalidades adicionales
+                $.ajax({
+                    url: "{{ route('admin.vehicleroutes.filter') }}",
+                    method: "GET",
+                    data: {
+                        date_start: dateRange[0],
+                        date_end: dateRange[1],
+                        time_route: time,
+                        vehicle: vehicle,
+                        route: route
+                    },
+                    success: function(data) {
+                        $('#tableBody').empty();
+                        data.forEach(function(route) {
+                            $('#tableBody').append(`
+                            <tr>
+                                <td>${route.id}</td>
+                                <td>${route.date_route}</td>
+                                <td>${route.time_route}</td>
+                                <td>${route.route_status ? route.route_status.name : ''}</td>
+                                <td>${route.vehicle ? route.vehicle.name : ''}</td>
+                                <td>${route.route ? route.route.name : ''}</td>
+                                <td>${route.description}</td>
+                                <td><a class="btn btn-primary btnEditar btn-sm" data-id="${route.id}"><i class="fas fa-edit"></i></a></td>
+                                <td>
+                                    <form action="/admin/vehicleroutes/${route.id}" method="post" class="frmEliminar">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        `);
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error('Error fetching filtered data:', xhr.responseText);
+                    }
+                });
+
+                // Guardar filtros en la sesión
+                $.ajax({
+                    url: "{{ route('admin.vehicleroutes.storeFilters') }}",
+                    method: "POST",
+                    data: {
+                        date_range: $('#dateRange').val(),
+                        time_picker: $('#timePicker').find("input").val(),
+                        vehicle_filter: $('#vehicleFilter').val(),
+                        route_filter: $('#routeFilter').val(),
+                        _token: '{{ csrf_token() }}'
+                    }
+                });
+            }
+
             $('#btnNuevo').click(function() {
                 $.ajax({
                     url: "{{ route('admin.vehicleroutes.create') }}",
@@ -238,11 +240,11 @@
                 });
             });
 
-            $('.btnEditar').click(function() {
+            $(document).on('click', '.btnEditar', function() {
                 var id = $(this).data('id');
                 $.ajax({
                     url: "{{ route('admin.vehicleroutes.edit', ['vehicleroute' => '__id__']) }}"
-                    .replace('__id__', id),
+                        .replace('__id__', id),
                     type: "GET",
                     success: function(response) {
                         $('#exampleModal .modal-body').html(response);
@@ -254,7 +256,7 @@
                 });
             });
 
-            $('.frmEliminar').submit(function(e) {
+            $(document).on('submit', '.frmEliminar', function(e) {
                 e.preventDefault();
                 Swal.fire({
                     title: "¿Está seguro de eliminar?",
@@ -270,6 +272,8 @@
                     }
                 });
             });
+
+            // No aplicar filtros al cargar la página
         });
     </script>
 

@@ -37,3 +37,5 @@ Route::resource('routes', RoutesController::class)->names('admin.routes');
 Route::post('routes/{route}/assignZone', [RoutezonesController::class, 'assignZone'])->name('admin.routes.assignZone');
 Route::delete('routes/{route}/unassignZone/{zone}', [RoutezonesController::class, 'unassignZone'])->name('admin.routes.unassignZone');
 Route::resource('vehicleroutes', \App\Http\Controllers\Admin\VehicleroutesController::class)->names('admin.vehicleroutes');
+Route::get('admin/vehicleroutes/filter', [App\Http\Controllers\admin\VehicleroutesController::class, 'filter'])->name('admin.vehicleroutes.filter');
+Route::post('admin/vehicleroutes/storeFilters', [App\Http\Controllers\admin\VehicleroutesController::class, 'storeFilters'])->name('admin.vehicleroutes.storeFilters');
