@@ -386,6 +386,11 @@ return [
             'url' => '/admin/vehicleroutes',
             'icon' => 'fas fa-fw fa-calendar-alt'
         ],
+        [
+            'text' => 'Mantenimiento',
+            'url' => '/admin/maintenances',
+            'icon' => 'fas fa-fw fa-calendar-alt'
+        ],
     ],
 
 
